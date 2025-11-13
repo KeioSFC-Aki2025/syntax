@@ -6,7 +6,7 @@
 <title>Course Schedule Viewer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#e6f0ff;
@@ -20,17 +20,81 @@
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg) 0%, #ffffff 40%);}
-.wrap{max-width:1400px;margin:32px auto;padding:20px}
-header{display:flex;align-items:flex-start;gap:16px}
+.wrap{max-width:1200px;margin:0 auto 32px auto;padding:20px}
+header {
+  /* 全幅表示 */
+  width: 100%;
+  /* 上部に余白を設定（元々.wrapにあったマージンを代替） */
+  padding-top: 32px;
+  /* 既存のflex設定をリセット */
+  display: block;
+}
+.header-content {
+  max-width: 1200px; /* .wrapと同じ最大幅 */
+  margin: 0 auto;    /* 中央揃え */
+  padding: 0 20px;   /* .wrapと同じ左右のパディング */
+}
 h1{margin:0;font-weight:700;font-size:1.6rem;color:var(--accent)}
-p.lead{margin:4px 0 0;color:var(--muted);font-size:1rem}
+p.lead{
+  /* マージン調整（下部に追加） */
+  margin: 4px 0 16px 0;
+  /* 丸みのあるフォントを指定 */
+  font-family: 'M PLUS Rounded 1c', 'Inter', system-ui, sans-serif;
+  /* フォントサイズを大きく */
+  font-size: 1.15rem;
+  /* 行間を広げて読みやすく */
+  line-height: 1.7;
+  /* 色を濃いアクセントカラー(var(--accent) = #1e3a8a)に設定 */
+  color: var(--accent);
+  /* 装飾を追加して目立たせる */
+  background-color: #f0f9ff; /* ごく薄い水色の背景 */
+  padding: 15px 20px;
+  border-radius: var(--radius); /* カードと同じ角丸を適用 */
+  border-left: 6px solid var(--accent-2); /* 左側にアクセントライン */
+}
+.course-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  /* 下に境界線を追加して区切りを明確に */
+  border-bottom: 1px solid #e6eef8;
+}
+/* メインタイトル */
+.course-header .title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0;
+}
+/* サブタイトル */
+.course-header .subtitle {
+  font-size: 1.2rem;
+  /* 色を少し落ち着かせる */
+  color: var(--muted);
+  margin: 8px 0;
+}
+/* 詳細（学期・時限） */
+.course-header .details {
+  margin: 16px 0;
+  font-size: 1rem;
+  /* 詳細も少し目立つように色付け */
+  color: var(--accent);
+  line-height: 1.5;
+}
+/* 短縮タイトル */
+.course-header .short-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+}
 .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:20px}
 @media (max-width:880px){ .grid{grid-template-columns:1fr;} }
 .card{
 	background:var(--card);
 	border-radius:var(--radius);
 	box-shadow:0 6px 18px rgba(15,23,42,0.06);
-	padding:20px 0;
+	padding:20px;
 	}
 .controls{display:flex;gap:10px;flex-wrap:wrap}
 .seg{
@@ -53,14 +117,14 @@ p.lead{margin:4px 0 0;color:var(--muted);font-size:1rem}
   
  /* position: relative; と z-index: 10; を削除 */
   line-height: 1.2; 
-  /* 【★変更】iOSでのタップハイライトを透明化（体験向上） */
+  
   -webkit-tap-highlight-color: transparent;
   
 }
 .seg button.active{
   background:linear-gradient(180deg,var(--accent),var(--accent-2));
   color:#fff;
-  /* ★ 修正点: 1.1remから固定の16pxに変更 */
+  
   font-size: 16px; 
 }
 select, input[type="search"]{padding:8px 10px;border-radius:10px;border:1px solid #e6eef8;background:white;font-size:0.95rem}
@@ -72,12 +136,11 @@ table{
 	white-space: pre-line;
 	table-layout: fixed;
 	}
-/* ▼▼▼ ここから追加 ▼▼▼ */
 /* PC表示時の列幅設定（より広い画面での動作） */
 table colgroup col:nth-child(1) { width: 8% !important; }  /* Session: 狭く */
 table colgroup col:nth-child(2) { width: 40% !important; } /* Class: より広く */
 table colgroup col:nth-child(3) { width: 17% !important; } /* Docs: 狭く */
-table colgroup col:nth-child(4) { width: 35% !important; } /* Videos /* ▲▲▲ ここまで追加 ▲▲▲ */
+table colgroup col:nth-child(4) { width: 35% !important; } 
 thead th{
 	position:sticky;
 	top:0;
@@ -92,7 +155,6 @@ tbody tr:hover{background:linear-gradient(90deg,rgba(59,130,246,0.05),transparen
 .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#dbeafe;border:1px solid #bfdbfe;color:var(--accent);font-weight:600}
 .video-list{
   margin:0;
-  /* 【★変更】左パディングを削除 */
   padding:0;
   list-style-type: none;
 }
@@ -118,7 +180,7 @@ body {
 	/* padding : 0;*/
   }
   button {
-    /* ★ 修正点: 垂直パディングを増やし、タップ領域を広げる */
+    /*  垂直パディングを増やし、タップ領域を広げる */
     padding: 6px 25px !important;
     display: inline-block; 
     font-size: 8px !important
@@ -167,7 +229,7 @@ body {
 	}
 	 /* 列幅の調整 */
  /* 列幅の調整 */
-   /* ★ 最終修正案: 4列構成に対応 */
+   /*  4列構成に対応 */
   table colgroup col:nth-child(1) { width: 8%; }  
   table colgroup col:nth-child(2) { width: 40%; }  
   table colgroup col:nth-child(3) { width: 10%; }  
@@ -200,7 +262,7 @@ body {
     font-size: 7px; /* ←変更後 */
   }
   
-   /* ▼▼▼ ここにVideos列のフォントサイズ変更を追加 ▼▼▼ */
+  
     /* Videos列のセル内のテキスト全般 */
     table td.col4, 
     /* Videos列のボタンのテキスト */
@@ -213,7 +275,7 @@ body {
     .col4 .video-btn {
         padding: 4px 6px !important; 
     }
-    /* ▲▲▲ ここまで追加/修正 ▲▲▲ */
+  
 }
 .grid {
   display: flex;
@@ -227,8 +289,6 @@ body {
   display: block;  /* gridの影響を外す */
   overflow-x: auto;
 }
-.wrap{max-width:1200px;margin:32px auto;padding:20px} /* PC用の設定 */
-header{display:flex;align-items:flex-start;gap:16px}
 .video-btn{
   display: inline-block; /* aタグをボタンとして表示するため追加 */
   text-decoration: none; /* aタグの下線を消去 */
@@ -275,12 +335,29 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
 </style>
 </head>
 <body>
+    <header>
+      <div class="header-content">
+        <div class="course-header">
+            <h1 class="title">Introduction to Theoretical Linguistics (Syntax)</h1>
+            <p class="subtitle">Visualizing the structure of language</p>
+            <div class="details">
+                Fall 2025<br>
+                Friday, the 3rd period
+            </div>
+            <h2 class="short-title">Introduction to Syntax</h2>
+        </div>
+        <p class="lead">
+          This course is one of the foundational lectures in contemporary theoretical linguistics. It focuses particularly on the formal aspects of linguistic expressions, introducing theoretical tools necessary for <b>analyzing the hierarchical structure of (words and) sentences</b>. As outlined in the schedule below, the course offers a comprehensive treatment ranging from the internal structure of words to larger syntactic domains such as verb phrases, noun phrases, and full sentences.
+          </p>
+      </div>
+    </header>
+  <div class="wrap">
     <div class="card">
 		<!-- 場所１：トグルボタンの指定 -->
 		<div class="controls">
 			<div class="seg" role="tablist" aria-label="view mode">
-				<button id="btnFull" class="active" role="tab" aria-selected="true">Full Schedule</button>
-<button id="btnSession" role="tab" aria-selected="false">By Session</button>
+                <button id="btnFull" role="tab" aria-selected="false">Full Schedule</button>
+				<button id="btnSession" class="active" role="tab" aria-selected="true">By Session</button>
 			</div>
 			<select id="sessionSelect" aria-label="Select session"></select>
 			<input type="search" id="searchBox" placeholder="Search class / reading / homework">
@@ -320,8 +397,9 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
         <li>Select "Full Schedule" to see all sessions.</li>
         <li>Videos appear as buttons that open the link in a new tab.</li>
       </ul>
-</div>
-<script>
+    </div>
+  </div>
+  <script>
 // =====================
 // Embedded scheduleData
 // =====================
@@ -564,6 +642,41 @@ function parseEntries(fieldStr){
     return [];
   }
 }
+/* ↓↓↓ 追加: 直近の未来のセッションIDを見つける関数 ↓↓↓ */
+/**
+ * 現在日時から見て、まだ終了していない直近の有効なセッションIDを見つける。
+ * deadlineClass または date を基準日とする。
+ * すべて終了している場合は、最後の有効なセッションを返す。
+ */
+function findUpcomingSessionId() {
+    const today = new Date();
+    // 1. 直近の未来のセッションを探す
+    for (const item of scheduleData) {
+        // 優先順位: deadlineClassフィールド > dateフィールド
+        const dateStr = item.deadlineClass || item.date;
+        if (dateStr) {
+            // parseDeadlineAsLocal は指定日の 23:59:59 を返す
+            const sessionDateEnd = parseDeadlineAsLocal(dateStr);
+            // セッション終了日時が現在時刻より未来（または同時刻）であれば、それが直近のセッション
+            if (sessionDateEnd && today <= sessionDateEnd) {
+                // セッションIDが有効（空ではない）ことを確認
+                if (item.session !== null && item.session !== undefined && item.session !== "") {
+                   return String(item.session);
+                }
+                // セッションIDが無効な場合（例: "No class"）は次のループへ
+            }
+        }
+    }
+    // 2. 未来のセッションが見つからなかった場合、最後の有効なセッションを探す（フォールバック）
+    for (let i = scheduleData.length - 1; i >= 0; i--) {
+        const item = scheduleData[i];
+        if (item.session !== null && item.session !== undefined && item.session !== "") {
+          return String(item.session);
+        }
+    }
+    return null;
+}
+/* ↑↑↑ 追加 ↑↑↑ */
 // ----------------------
 // Rendering
 // ----------------------
@@ -581,8 +694,15 @@ function init(){
   opt.textContent = `Class ${item.session}:${classText}`;
   sessionSelect.appendChild(opt);
 });
-  sessionSelect.value = String(scheduleData[0].session);
-  setMode('full'); // ★ 修正済み: 初期ロード時に「Full Schedule」モードを起動
+  const upcomingSessionId = findUpcomingSessionId();
+  // 取得したIDがドロップダウンリストに存在するか確認してから設定
+  if (upcomingSessionId !== null && sessionSelect.querySelector(`option[value="${upcomingSessionId}"]`)) {
+    sessionSelect.value = upcomingSessionId;
+  } else if (scheduleData.length > 0) {
+    // 万が一有効なセッションが一つも見つからなかった場合のフォールバック
+    sessionSelect.value = String(scheduleData[0].session);
+  }
+  setMode('session');
   btnSession.addEventListener('click',()=>setMode('session'));
   btnFull.addEventListener('click',()=>setMode('full'));
   sessionSelect.addEventListener('change',()=>{ if(btnSession.classList.contains('active')) renderBySession(sessionSelect.value); });
