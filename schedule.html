@@ -471,7 +471,7 @@ const scheduleData =
     "date": "",
     "video": "1 N' (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>, ",
     "deadlineHW": "11/13/2025",
-    "handout": "Answer key for Assgn 4<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7dded8a5ed5842f183636c03f0d5148f.pdf>[after 11/08/2025]",
+    "handout": "Answer key (Assgn 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7dded8a5ed5842f183636c03f0d5148f.pdf>[after 11/08/2025]",
     "deadlineClass": "11/7/2025",
     "date2": ""
   },
@@ -777,13 +777,13 @@ function createRow(item){
       const a = document.createElement('a');
       a.className = 'handout-link'; // 既存のリンクスタイルを再利用
       a.textContent = entry.label;
-        /* ↓↓↓ 追加: アクティベーション日時チェック (today変数は関数の冒頭で定義済み) ↓↓↓ */
+        /* ↓↓↓ 変更: アクティベーション日時チェック (today変数は関数の冒頭で定義済み) ↓↓↓ */
         let isAvailable = true;
         if (entry.availableAfterStr) {
-          // parseDeadlineAsLocal は指定日の 23:59:59 を返す
-          const availableDateBoundary = parseDeadlineAsLocal(entry.availableAfterStr);
-          // 現在時刻(today)がその日時以前（その日を含む）であれば無効
-          if (availableDateBoundary && today <= availableDateBoundary) {
+          // parseAvailableFromAsLocal は指定日の 00:00:00 を返す
+          const availableStartTime = parseAvailableFromAsLocal(entry.availableAfterStr);
+          // 現在時刻(today)が開始時刻より「前」であれば無効
+          if (availableStartTime && today < availableStartTime) {
             isAvailable = false;
           }
         }
@@ -822,18 +822,18 @@ function createRow(item){
         const anchor = document.createElement('a');
         anchor.className='video-btn';
         anchor.textContent=v.label;
-        /* ↓↓↓ 追加: アクティベーション日時チェック ↓↓↓ */
+        /* ↓↓↓ 変更: アクティベーション日時チェック ↓↓↓ */
         let isAvailable = true;
         if (v.availableAfterStr) {
-          // parseDeadlineAsLocal は指定日の 23:59:59 を返す
-          const availableDateBoundary = parseDeadlineAsLocal(v.availableAfterStr);
-          // 現在時刻(today)がその日時以前（その日を含む）であれば無効
-          if (availableDateBoundary && today <= availableDateBoundary) {
+          // parseAvailableFromAsLocal は指定日の 00:00:00 を返す
+          const availableStartTime = parseAvailableFromAsLocal(v.availableAfterStr);
+          // 現在時刻(today)が開始時刻より「前」であれば無効
+          if (availableStartTime && today < availableStartTime) {
             isAvailable = false;
           }
         }
         if (isAvailable) {
-        /* ↑↑↑ 追加 ↑↑↑ */
+        /* ↑↑↑ 変更 ↑↑↑ */
           anchor.href = v.url;
           anchor.target = '_blank'; /* ←新しいタブで開く設定に変更 */
           /* ↓セキュリティ対策のため追加することを推奨します */
@@ -845,7 +845,8 @@ function createRow(item){
           anchor.setAttribute('aria-disabled', 'true');
           // マウスオーバーでいつから有効か表示
           if (v.availableAfterStr) {
-            anchor.title = `Available after ${v.availableAfterStr}`;
+            /* ▼▼▼ 変更: "Available from"に変更 ▼▼▼ */
+            anchor.title = `Available from ${v.availableAfterStr}`;
           }
         }
         /* ↑↑↑ 追加 ↑↑↑ */
