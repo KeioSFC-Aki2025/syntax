@@ -17,6 +17,11 @@
   --success:#16a34a;
   --danger:#1e3a8a;
   --radius:12px;
+  --muted-gray-accent: #64748b; /* 落ち着いたグレーのアクセントカラー */
+  --muted-gray-light: #94a3b8;  /* 明るめのグレー（ボーダー用） */
+  --muted-gray-bg: #f1f5f9;     /* 薄いグレーの背景色（ヘッダー用） */
+  --muted-gray-border: #e2e8f0; /* 境界線の色 */
+  
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg) 0%, #ffffff 40%);}
@@ -331,6 +336,48 @@ a.handout-link{
   cursor: not-allowed;
   opacity: 0.7;
 }
+#sessionOverviewContainer .session-panel {
+    margin-top: 28px;
+}
+#sessionOverviewContainer .session-panel h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    /* タイトルの下に線を引いて強調 */
+    border-bottom: 2px solid var(--accent-2);
+}
+/* 最初のパネルは上部マージンを調整 */
+#sessionOverviewContainer .session-panel:first-child {
+    margin-top: 20px;
+}
+/* パネルタイトル(h2)のスタイル変更 */
+/* 詳細度を高めるため .session-panel.muted-panel とする */
+.session-panel.muted-panel h2 {
+    color: var(--muted-gray-accent);
+    /* タイトルの下の線を明るいグレーに変更 */
+    border-bottom-color: var(--muted-gray-light);
+}
+/* テーブルヘッダー(th)のスタイル変更 (既存のスタイルを上書き) */
+.session-panel.muted-panel table thead th {
+    /* 既存の青いグラデーションをグレー系で上書き */
+    background: linear-gradient(180deg, #ffffff, var(--muted-gray-bg));
+    color: var(--muted-gray-accent);
+    border-bottom-color: var(--muted-gray-border);
+}
+/* テーブル行のホバーエフェクトもグレー系に変更 (既存のスタイルを上書き) */
+.session-panel.muted-panel table tbody tr:hover {
+    /* 既存の青みがかったグラデーションをグレー系で上書き */
+    background: linear-gradient(90deg, rgba(100, 116, 139, 0.08), transparent);
+}
+/* データがない場合のメッセージスタイル */
+.empty-message-cell {
+    text-align: center !important;
+    padding: 20px !important;
+    color: var(--muted) !important;
+    font-style: italic;
+}
 footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
 </style>
 </head>
@@ -359,35 +406,52 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
                 <button id="btnFull" role="tab" aria-selected="false">Full Schedule</button>
 				<button id="btnSession" class="active" role="tab" aria-selected="true">By Session</button>
 			</div>
-			<select id="sessionSelect" aria-label="Select session"></select>
+            <select id="sessionSelect" aria-label="Select session" style="display: none;"></select>
 			<input type="search" id="searchBox" placeholder="Search class / reading / homework">
 		</div>
 		<!-- 場所2：コメント -->
 		<div class="card" style="margin-top:14px;padding:10px;color:#1e40af;font-weight:600" id="generalComment">
-			<!-- General Comment displayed here -->
 			<p>Class on November 7 is cancelled.</p>
 		</div>
-		<!-- 場所3：スケジュールの表 -->
-		<div class="tablewrap">  
-			<table id="scheduleTable">
-    		<colgroup>
-		        <col class="col1">
-		        <col class="col2">
-		        <col class="col3"> 
-		        <col class="col4">    
-			</colgroup>
-    <thead>
-      <tr>
-            <th class="col1" style="width: 5%;"></th>
-            <th class="col2" style="width: 28%;">Class</th>
-            <th class="col3" style="width: 32%;">Docs</th>
-            <th class="col4" style="width: 35%;">Videos for next session</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-		</div>
-    </div>
+        <template id="tableTemplate">
+            <table>
+            		<colgroup>
+        		        <col class="col1">
+        		        <col class="col2">
+        		        <col class="col3">
+        		        <col class="col4">
+        			</colgroup>
+            <thead>
+              <tr>
+                    <th class="col1" style="width: 5%;"></th>
+                    <th class="col2" style="width: 28%;">Class</th>
+                    <th class="col3" style="width: 32%;">Docs</th>
+                    <th class="col4" style="width: 35%;">Videos for next session</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            </table>
+        </template>
+        <div id="fullScheduleContainer" class="tablewrap" style="display: none;">
+             </div>
+        <div id="sessionOverviewContainer">
+            <section class="session-panel muted-panel" id="panelLast">
+                <h2>Last Class</h2>
+                <div class="tablewrap">
+                    </div>
+            </section>
+            <section class="session-panel" id="panelNext">
+                <h2>Next Class</h2>
+                <div class="tablewrap">
+                     </div>
+            </section>
+            <section class="session-panel muted-panel" id="panelAfterNext">
+                <h2>Class After Next</h2>
+                <div class="tablewrap">
+                    </div>
+            </section>
+        </div>
+        </div>
   
    <p></p>
    <div class="card">
@@ -587,6 +651,9 @@ const sessionSelect  = document.getElementById('sessionSelect');
 const tbody = document.querySelector('#scheduleTable tbody');
 const searchBox = document.getElementById('searchBox');
 const generalCommentDiv = document.getElementById('generalComment');
+const fullScheduleContainer = document.getElementById('fullScheduleContainer');
+const sessionOverviewContainer = document.getElementById('sessionOverviewContainer');
+const tableTemplate = document.getElementById('tableTemplate');
 // ----------------------
 // Utilities
 // ----------------------
@@ -642,39 +709,57 @@ function parseEntries(fieldStr){
     return [];
   }
 }
-/* ↓↓↓ 追加: 直近の未来のセッションIDを見つける関数 ↓↓↓ */
+/* ↓↓↓ 追加: 現在日時に関連するセッション(Last/Next/AfterNext)を見つける関数 ↓↓↓ */
 /**
- * 現在日時から見て、まだ終了していない直近の有効なセッションIDを見つける。
- * deadlineClass または date を基準日とする。
- * すべて終了している場合は、最後の有効なセッションを返す。
+ * 現在日時を基準に、Last, Next, After Next の3つのセッションを特定する。
  */
-function findUpcomingSessionId() {
+function findRelevantSessions() {
     const today = new Date();
-    // 1. 直近の未来のセッションを探す
+    let lastClass = null;
+    let nextClass = null;
+    let afterNextClass = null;
+    const pastClasses = [];
+    const futureClasses = [];
+    // scheduleDataが時系列順に並んでいることを前提とする
     for (const item of scheduleData) {
-        // 優先順位: deadlineClassフィールド > dateフィールド
         const dateStr = item.deadlineClass || item.date;
         if (dateStr) {
-            // parseDeadlineAsLocal は指定日の 23:59:59 を返す
-            const sessionDateEnd = parseDeadlineAsLocal(dateStr);
-            // セッション終了日時が現在時刻より未来（または同時刻）であれば、それが直近のセッション
-            if (sessionDateEnd && today <= sessionDateEnd) {
-                // セッションIDが有効（空ではない）ことを確認
-                if (item.session !== null && item.session !== undefined && item.session !== "") {
-                   return String(item.session);
-                }
-                // セッションIDが無効な場合（例: "No class"）は次のループへ
-            }
+             // parseDeadlineAsLocal は指定日の 23:59:59 を返す
+             const sessionDateEnd = parseDeadlineAsLocal(dateStr);
+             if (sessionDateEnd) {
+                 if (today > sessionDateEnd) {
+                     // 終了時刻を過ぎている場合は過去
+                     pastClasses.push(item);
+                 } else {
+                     // まだ終了していない場合は未来（当日も含む）
+                     futureClasses.push(item);
+                 }
+             }
+        } else {
+            // 日付がない場合 (例: Session 0の開始前や、Testなどリストの最後)。
+            // これらは未来の予定として扱う。
+            futureClasses.push(item);
         }
     }
-    // 2. 未来のセッションが見つからなかった場合、最後の有効なセッションを探す（フォールバック）
-    for (let i = scheduleData.length - 1; i >= 0; i--) {
-        const item = scheduleData[i];
-        if (item.session !== null && item.session !== undefined && item.session !== "") {
-          return String(item.session);
+    // Last Classの特定
+    if (pastClasses.length > 0) {
+        // 過去のクラスの中で最後（直近）のもの
+        lastClass = pastClasses[pastClasses.length - 1];
+    } else {
+        // 過去のクラスがまだない場合（コース開始前）、Class 0を探して表示
+        const classZero = scheduleData.find(i => String(i.session) === "0");
+        if (classZero) {
+             lastClass = classZero;
         }
     }
-    return null;
+    // Next Class と After Next Class の特定
+    if (futureClasses.length > 0) {
+        nextClass = futureClasses[0];
+        if (futureClasses.length > 1) {
+            afterNextClass = futureClasses[1];
+        }
+    }
+    return { lastClass, nextClass, afterNextClass };
 }
 /* ↑↑↑ 追加 ↑↑↑ */
 // ----------------------
@@ -682,41 +767,102 @@ function findUpcomingSessionId() {
 // ----------------------
 function init(){
   generalCommentDiv.textContent = GeneralComment;
-  // fill session select
- scheduleData.forEach(item=>{
-  const opt = document.createElement('option');
-  opt.value = String(item.session);
-  
-  // item.class から <br> または <br/> タグを削除する処理を追加
-  const classText = item.class.replace(/<br\s*\/?>/gi, ''); 
-  
-  // 変更したテキストを使用
-  opt.textContent = `Class ${item.session}:${classText}`;
-  sessionSelect.appendChild(opt);
-});
-  const upcomingSessionId = findUpcomingSessionId();
-  // 取得したIDがドロップダウンリストに存在するか確認してから設定
-  if (upcomingSessionId !== null && sessionSelect.querySelector(`option[value="${upcomingSessionId}"]`)) {
-    sessionSelect.value = upcomingSessionId;
-  } else if (scheduleData.length > 0) {
-    // 万が一有効なセッションが一つも見つからなかった場合のフォールバック
-    sessionSelect.value = String(scheduleData[0].session);
-  }
+  /* ↓↓↓ 変更: 内部IDやドロップダウン生成ロジックは不要なため削除 ↓↓↓ */
+  /* ↓↓↓ 追加: テーブル構造の初期化 ↓↓↓ */
+  initializeTables();
+  /* ↑↑↑ 追加 ↑↑↑ */
   setMode('session');
   btnSession.addEventListener('click',()=>setMode('session'));
   btnFull.addEventListener('click',()=>setMode('full'));
-  sessionSelect.addEventListener('change',()=>{ if(btnSession.classList.contains('active')) renderBySession(sessionSelect.value); });
-  searchBox.addEventListener('input',()=>{ const mode = btnFull.classList.contains('active') ? 'full' : 'session'; if(mode==='full') renderFull(); else renderBySession(sessionSelect.value); });
+  /* ↓↓↓ 変更: イベントリスナーの調整 (sessionSelect変更イベントは不要) ↓↓↓ */
+  // sessionSelect.addEventListener('change',...);
+  // 検索ボックスのイベントリスナーを調整
+  searchBox.addEventListener('input',()=>{
+    // 検索はFullモードでのみ動作するように設定
+    if(btnFull.classList.contains('active')) {
+        renderFull();
+    }
+  });
+}
+/* ↓↓↓ 追加: 新しいレンダリング関数群 ↓↓↓ */
+/**
+ * HTMLテンプレートからテーブル構造を複製し、各コンテナに配置する。
+ */
+function initializeTables() {
+    // Full Schedule用
+    const tableFull = tableTemplate.content.cloneNode(true).querySelector('table');
+    // 固有のIDを付与
+    tableFull.id = 'scheduleTableFull';
+    fullScheduleContainer.appendChild(tableFull);
+    // Overview用 (Last, Next, AfterNext)
+    const panelIds = ['panelLast', 'panelNext', 'panelAfterNext'];
+    panelIds.forEach(panelId => {
+        const panel = document.getElementById(panelId);
+        const container = panel.querySelector('.tablewrap');
+        if (container) {
+            const table = tableTemplate.content.cloneNode(true).querySelector('table');
+            // 例: scheduleTable_panelLast
+            table.id = `scheduleTable_${panelId}`;
+            container.appendChild(table);
+        }
+    });
+}
+/**
+ * By Session Overview モードの描画処理。
+ */
+function renderSessionOverview() {
+    const { lastClass, nextClass, afterNextClass } = findRelevantSessions();
+    // 各パネルに対応するテーブルIDとデータを指定して描画
+    // 過去の授業がない場合はメッセージは表示しない（Class 0が表示されるか、空欄になる）
+    renderTable('scheduleTable_panelLast', lastClass);
+    // 未来の授業がない場合はメッセージを表示
+    renderTable('scheduleTable_panelNext', nextClass, "計画されている授業はありません");
+    renderTable('scheduleTable_panelAfterNext', afterNextClass, "計画されている授業はありません");
+}
+/**
+ * 汎用的なテーブルレンダリング関数。
+ * 指定されたIDのテーブルに、指定されたアイテムを描画する。
+ */
+function renderTable(tableId, item, emptyMessage = null) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (item) {
+        // Overviewモードでは検索フィルタリングは適用しない
+        tbody.appendChild(createRow(item));
+    } else if (emptyMessage) {
+        // アイテムがなく、メッセージがある場合は表示
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 4; // 4列構成
+        td.textContent = emptyMessage;
+        td.className = 'empty-message-cell'; // CSSで定義したスタイル
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
 }
 function setMode(mode){
   if(mode==='session'){
+    // By Session Overview モード
     btnSession.classList.add('active'); btnSession.setAttribute('aria-selected','true');
     btnFull.classList.remove('active'); btnFull.setAttribute('aria-selected','false');
-    if(!sessionSelect.value) sessionSelect.value = String(scheduleData[0].session);
-    renderBySession(sessionSelect.value);
+    /* ↓↓↓ 変更: コンテナ切り替えとOverviewレンダリング ↓↓↓ */
+    fullScheduleContainer.style.display = 'none';
+    sessionOverviewContainer.style.display = 'block';
+    // 検索ボックスはOverviewモードでは無効化し、値をクリア
+    searchBox.disabled = true;
+    searchBox.value = '';
+    renderSessionOverview();
   } else {
+    // Full Schedule モード
     btnFull.classList.add('active'); btnFull.setAttribute('aria-selected','true');
     btnSession.classList.remove('active'); btnSession.setAttribute('aria-selected','false');
+    /* ↓↓↓ 変更: コンテナ切り替えとFullレンダリング ↓↓↓ */
+    sessionOverviewContainer.style.display = 'none';
+    fullScheduleContainer.style.display = 'block';
+    searchBox.disabled = false; // 検索ボックスを有効化
     renderFull();
   }
 }
@@ -725,14 +871,10 @@ function filterText(item,text){
   text = text.toLowerCase();
   return (item.class.toLowerCase().includes(text) || (item.reading && item.reading.toLowerCase().includes(text)) || (item.comment && item.comment.toLowerCase().includes(text)));
 }
-function renderBySession(sessionId){
-  const item = scheduleData.find(i=>String(i.session)===String(sessionId));
-  tbody.innerHTML = '';
-  if(!item) return;
-  if(!filterText(item,searchBox.value)) return;
-  tbody.appendChild(createRow(item));
-}
 function renderFull(){
+  /* ↓↓↓ 変更: ターゲットテーブル(#scheduleTableFull)のtbodyを取得 ↓↓↓ */
+  const tbody = document.querySelector('#scheduleTableFull tbody');
+  if (!tbody) return;
   tbody.innerHTML='';
   const searchText = searchBox.value;
   scheduleData.forEach(item=>{
