@@ -563,7 +563,7 @@ const scheduleData =
     "session": "8",
     "class": "Chapter 6<br><br>X-bar syntax (II)",
     "date": "11/28/2025",
-    "video": "1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 2 TPs (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, 3 CPs (13:05)<https://www.youtube.com/watch?v=YgLYDx9boqk&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=3>",
+    "video": "1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 2 TPs (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, After watching the videos complete the following assignment and post it online., Assignment 7 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_96677390ad3540089a0ad8fb80a9c724.docx>, Assignment 7 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_a9bde1a75d1b4d74968486c1f4383ca4.pdf>",
     "deadlineHW": "12/4/2025",
     "handout": "Assignment 6 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_611aad0fbf034f43aee620c92a86e026.pdf>, Assignment 6 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9b1cf07032c047fcbc97dadf94bd094f.docx>, Answer key (Assgn 6)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f08fdbef452a4ad5b25935c85f2998f5.pdf>[after 11/29/2025]",
     "deadlineClass": "11/28/2025",
@@ -573,9 +573,9 @@ const scheduleData =
     "session": "9",
     "class": "Chapter 7<br><br>Extending X-bar <br>Theory [Part 1]",
     "date": "12/5/2025",
-    "video": "1 From Tense to Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 2 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>, 3 Specifier and Subjects (6:26)<https://www.youtube.com/watch?v=idE-9lYRY-4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=6>",
+    "video": "1 CPs (13:05)<https://www.youtube.com/watch?v=YgLYDx9boqk&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=3>, 2 From Tense to Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 3 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>, 4 Specifier and Subjects (6:26)<https://www.youtube.com/watch?v=idE-9lYRY-4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=6>",
     "deadlineHW": "12/11/2025",
-    "handout": "",
+    "handout": "Answer key for Assgn 7 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_201bad8a603e4f4e98c9ae31f9d285d3.pdf>[after 13:00 12/05/2025]",
     "deadlineClass": "12/5/2025",
     "date2": "12/5"
   },
@@ -665,16 +665,29 @@ function parseDeadlineAsLocal(deadlineStr){
   // 期限は指定日の終わり (23:59:59)
   return new Date(y,m-1,d,23,59,59);
 }
-/* ↓↓↓ 追加: 利用開始日時(00:00:00)を取得する関数 ↓↓↓ */
+/* 時刻指定に対応した利用開始日時パース関数 ↓↓↓ */
 function parseAvailableFromAsLocal(dateStr){
   if(!dateStr) return null;
-  const parts = dateStr.split('/').map(x=>parseInt(x,10));
-  if(parts.length<3 || parts.some(isNaN)) return null;
-  const [m,d,y] = parts;
-  // 利用開始は指定日の始まり (00:00:00)
-  return new Date(y, m-1, d, 0, 0, 0);
+  let hour = 0;
+  let minute = 0;
+  let datePart = dateStr.trim(); // デフォルトは時刻なしと仮定
+  // "13:00 11/15/2025" のような時間指定があるかチェック
+  const timeMatch = dateStr.match(/^(\d{1,2}):(\d{2})\s+(.*)$/);
+  
+  if (timeMatch) {
+    // 時刻指定がある場合
+    hour = parseInt(timeMatch[1], 10);
+    minute = parseInt(timeMatch[2], 10);
+    datePart = timeMatch[3]; // 残りの日付部分
+  }
+  // 日付部分 (例: "11/15/2025") をパース
+  const dateParts = datePart.split('/').map(x=>parseInt(x,10));
+  if(dateParts.length < 3 || dateParts.some(isNaN)) return null;
+  
+  const [m, d, y] = dateParts;
+  // 利用開始は指定日の指定時刻 (デフォルトは 00:00:00)
+  return new Date(y, m-1, d, hour, minute, 0);
 }
-/* ↑↑↑ 追加 ↑↑↑ */
 /**
  * 汎用パーサ: 改行・カンマで分割し、
  * 各パートについて "ラベル<url>" の形式を検出して {label, url} を返す。
