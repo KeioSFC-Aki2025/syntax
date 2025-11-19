@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -142,10 +141,12 @@ table{
 	table-layout: fixed;
 	}
 /* PC表示時の列幅設定（より広い画面での動作） */
-table colgroup col:nth-child(1) { width: 8% !important; }  /* Session: 狭く */
-table colgroup col:nth-child(2) { width: 40% !important; } /* Class: より広く */
-table colgroup col:nth-child(3) { width: 17% !important; } /* Docs: 狭く */
-table colgroup col:nth-child(4) { width: 35% !important; } 
+table colgroup col:nth-child(1) { width: 5% !important; }  /* Session */
+table colgroup col:nth-child(2) { width: 11% !important; } /* Date */
+table colgroup col:nth-child(3) { width: 12% !important; } /* Chapter */
+table colgroup col:nth-child(4) { width: 20% !important; } /* Class  */
+table colgroup col:nth-child(5) { width: 22% !important; } /* Docs  */
+table colgroup col:nth-child(6) { width: 30% !important; } /* Videos  */
 thead th{
 	position:sticky;
 	top:0;
@@ -155,8 +156,16 @@ thead th{
 	font-size:0.95rem;
 	border-bottom:1px solid #e6eef8
 }
-tbody td{padding:12px 14px;border-bottom:1px dashed #eef4fb;vertical-align:top}
-tbody tr:hover{background:linear-gradient(90deg,rgba(59,130,246,0.05),transparent)}
+tbody td{
+    padding:12px 14px;
+    border-bottom:1px dashed #eef4fb;
+    vertical-align:top;
+    /* ↓↓↓ 以下2行を追加 ↓↓↓ */
+    word-break: break-word;     /* 長い文字列を強制的に折り返す */
+    overflow-wrap: break-word;  /* 標準的な折り返し設定 */
+}
+/* ↓↓↓ 変更: タイトル行(.section-title-row)を除外してホバーを適用 ↓↓↓ */
+tbody tr:not(.section-title-row):hover{background:linear-gradient(90deg,rgba(59,130,246,0.05),transparent)}
 .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#dbeafe;border:1px solid #bfdbfe;color:var(--accent);font-weight:600}
 .video-list{
   margin:0;
@@ -232,13 +241,14 @@ body {
 		padding:5px  5px;        
 		word-break: break-word;  
 	}
-	 /* 列幅の調整 */
- /* 列幅の調整 */
-   /*  4列構成に対応 */
-  table colgroup col:nth-child(1) { width: 8%; }  
-  table colgroup col:nth-child(2) { width: 40%; }  
-  table colgroup col:nth-child(3) { width: 10%; }  
-  table colgroup col:nth-child(4) { width: 42%; } 
+	/* 列幅の調整 */
+ /*  5列構成に対応 */
+table colgroup col:nth-child(1) { width: 6%; }  /* Session */
+  table colgroup col:nth-child(2) { width: 10%; } /* Date */
+  table colgroup col:nth-child(3) { width: 15%; } /* Chapter */
+  table colgroup col:nth-child(4) { width: 29%; } /* Class */
+  table colgroup col:nth-child(5) { width: 10%; } /* Docs */
+  table colgroup col:nth-child(6) { width: 30%; } /* Videos */
   #scheduleTable {
     width: 100%;
     table-layout: fixed; /* 列幅を均等割り */
@@ -366,8 +376,9 @@ a.handout-link{
     color: var(--muted-gray-accent);
     border-bottom-color: var(--muted-gray-border);
 }
+/* ↓↓↓ 変更: タイトル行(.section-title-row)を除外してホバーを適用 ↓↓↓ */
 /* テーブル行のホバーエフェクトもグレー系に変更 (既存のスタイルを上書き) */
-.session-panel.muted-panel table tbody tr:hover {
+.session-panel.muted-panel table tbody tr:not(.section-title-row):hover {
     /* 既存の青みがかったグラデーションをグレー系で上書き */
     background: linear-gradient(90deg, rgba(100, 116, 139, 0.08), transparent);
 }
@@ -378,6 +389,18 @@ a.handout-link{
     color: var(--muted) !important;
     font-style: italic;
 }
+/* ↓↓↓ 追加: スケジュール表のセクションタイトル行のスタイル ↓↓↓ */
+.section-title-row td {
+  text-align: center; /* 中央揃え */
+  font-weight: 700;
+  /* 既存の変数を利用して統一感を出す */
+  background-color: var(--muted-gray-bg); 
+  color: var(--accent);
+  padding: 14px 14px;
+  /* 境界線を少しはっきりさせる */
+  border-bottom: 1px solid var(--muted-gray-border);
+}
+/* ↑↑↑ 追加 ↑↑↑ */
 footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
 </style>
 </head>
@@ -400,7 +423,6 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
     </header>
   <div class="wrap">
     <div class="card">
-		<!-- 場所１：トグルボタンの指定 -->
 		<div class="controls">
 			<div class="seg" role="tablist" aria-label="view mode">
                 <button id="btnFull" role="tab" aria-selected="false">Full Schedule</button>
@@ -409,29 +431,32 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
             <select id="sessionSelect" aria-label="Select session" style="display: none;"></select>
 			<input type="search" id="searchBox" placeholder="Search class / reading / homework">
 		</div>
-		<!-- 場所2：コメント -->
 		<div class="card" style="margin-top:14px;padding:10px;color:#1e40af;font-weight:600" id="generalComment">
 			<p>Class on November 7 is cancelled.</p>
 		</div>
         <template id="tableTemplate">
-            <table>
-            		<colgroup>
-        		        <col class="col1">
-        		        <col class="col2">
-        		        <col class="col3">
-        		        <col class="col4">
-        			</colgroup>
-            <thead>
-              <tr>
-                    <th class="col1" style="width: 5%;"></th>
-                    <th class="col2" style="width: 28%;">Class</th>
-                    <th class="col3" style="width: 32%;">Docs</th>
-                    <th class="col4" style="width: 35%;">Videos for next session</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-            </table>
-        </template>
+    <table>
+        <colgroup>
+            <col class="col1">
+            <col class="col-date">
+            <col class="col-chapter"> 
+			<col class="col2">
+            <col class="col3">
+            <col class="col4">
+        </colgroup>
+        <thead>
+            <tr>
+                <th class="col1"></th>
+                <th class="col-date">Date</th>
+                <th class="col-chapter">Chapter</th> 
+				<th class="col2">Class</th>
+                <th class="col3">Docs</th>
+                <th class="col4">Videos for next session</th>
+            </tr>
+        </thead>
+    <tbody></tbody>
+    </table>
+</template>
         <div id="fullScheduleContainer" class="tablewrap" style="display: none;">
              </div>
         <div id="sessionOverviewContainer">
@@ -471,7 +496,9 @@ const scheduleData =
 [
   {
     "session": "Part",
+    "chapter": "",
     "class": "Introduction",
+    "format": "",
     "date": "",
     "video": "",
     "deadlineHW": "",
@@ -481,27 +508,33 @@ const scheduleData =
   },
   {
     "session": "0",
-    "class": "Preliminaries<br><br>Watch before 10/02",
+    "chapter": "Preliminaries<br><br>Watch before 10/02",
+    "class": "",
+    "format": "on-demand",
     "date": "",
     "video": "1 Introduction to linguistics (34:39)<https://www.youtube.com/watch?v=cHDqpiJoqpk>, 2 Prescriptivism vs descriptivism (17:48)<https://www.youtube.com/watch?v=mO4WQB1BIq0>",
-    "deadlineHW": "10/2/2025",
+    "deadlineHW": "2025/10/2",
     "handout": "",
-    "deadlineClass": "10/2/2025",
+    "deadlineClass": "2025/10/2",
     "date2": ""
   },
   {
     "session": "1",
-    "class": "Chapter 1<br><br>What is syntax?",
-    "date": "10/3/2025",
+    "chapter": "Chapter 1",
+    "class": "What is syntax?",
+    "format": "face-to-face",
+    "date": "2025/10/3",
     "video": "1 Parts of Speech(20:32)<https://www.youtube.com/watch?v=EzlNj8NNX2A&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm>,  2 Functional Parts of Speech (13:17)<https://www.youtube.com/watch?v=sk5iO_uFgKw&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=2>, 3 Subcategories (22:53)<https://www.youtube.com/watch?v=0JvcF6SrDFQ&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=3>",
-    "deadlineHW": "10/9/2025",
+    "deadlineHW": "2025/10/9",
     "handout": "Slides<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>",
-    "deadlineClass": "10/3/2025",
-    "date2": "10/3"
+    "deadlineClass": "2025/10/3",
+    "date2": "2025/10/3"
   },
   {
     "session": "Part",
+    "chapter": "",
     "class": "Framework 1: PS-rules",
+    "format": "",
     "date": "",
     "video": "",
     "deadlineHW": "",
@@ -511,107 +544,141 @@ const scheduleData =
   },
   {
     "session": "2",
-    "class": "Chapter 2<br><br>Parts of speech",
-    "date": "10/10/2025",
+    "chapter": "Chapter 2",
+    "class": "Parts of speech",
+    "format": "face-to-face",
+    "date": "2025/10/10",
     "video": "1 Structure (9:51)<https://www.youtube.com/watch?v=JoUk6RsUgCs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=1>, 2 Constituency tests (17:47)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>, 3 PS rules [1] (25:14)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>,,  (The following video highly recommended, but optional), 4 *Exercise (20:12)<https://www.youtube.com/watch?v=Svd7AuAcGDs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=11>",
-    "deadlineHW": "10/16/2025",
+    "deadlineHW": "2025/10/16",
     "handout": "Assignment 1 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c6070fab55144944a2a4c710af1366b0.pdf>, Assignment 1 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ef0f92d5e063453b98fbb834831fe141.docx>, Slides (Class 2)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_00d57b08245c49f5a9d981ee3f163a4c.pdf>,Don't open the following until you are instructed, Exercise 7<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_3ceb587949ba431ea058b6767c79e6d7.pdf>",
-    "deadlineClass": "10/10/2025",
-    "date2": "10/10"
+    "deadlineClass": "2025/10/10",
+    "date2": "2025/10/10"
   },
   {
     "session": "3",
-    "class": "Chapter 3<br><br>Constituency, <br>trees and rules (I): <br>NP, AP, and AdvP",
-    "date": "10/17/2025",
+    "chapter": "Chapter 3",
+    "class": "Constituency, trees and rules (I): <br>NP, AP, and AdvP",
+    "format": "face-to-face",
+    "date": "2025/10/17",
     "video": "1 A review (10:30) <https://youtu.be/N2nbP7IUBzc>, 2 PS rules [2] (26:01)<https://www.youtube.com/watch?v=HzJQMerlzic&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=4>, 3 How to draw a tree (17:30)<https://www.youtube.com/watch?v=1bsOQweQMA0&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=5>, 4 Ambiguity (10:27)<https://www.youtube.com/watch?v=1sYPVkstAoU&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=6>,  (The following video is highly recommended, but optional),5 *Exercise (18:53)<https://www.youtube.com/watch?v=_2hlrVdGGfk&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=12>",
-    "deadlineHW": "10/23/2025",
+    "deadlineHW": "2025/10/23",
     "handout": "Assignment 2 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_06d96766e8624f6bab0d76a67fcfdc33.pdf>, Assignment 2 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8ec2a39e88314c329df62db239970c20.docx>, Slides (Class 3)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e475a64b943f43049ecd76707750b7cd.pdf>",
-    "deadlineClass": "10/17/2025",
-    "date2": "10/17"
+    "deadlineClass": "2025/10/17",
+    "date2": "2025/10/17"
   },
   {
     "session": "4",
-    "class": "Chapter 3<br><br>Constituency, <br>trees and rules (II):<br>PP, VP, TP, and CP",
-    "date": "10/24/2025",
+    "chapter": "Chapter 3",
+    "class": "Constituency, trees and rules (II):<br>PP, VP, TP, and CP",
+    "format": "face-to-face",
+    "date": "2025/10/24",
     "video": "There is no new video to watch this week. Instead please work on Ex 1 & 2 in Assignment 3 and come to class prepared with your answers.",
-    "deadlineHW": "10/30/2025",
+    "deadlineHW": "2025/10/30",
     "handout": "Assignment 3 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_dcc5abd9b7e6450e85a9657db7b77e2c.pdf>, Assignment 3 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9bdf812cb806415b912168c175a93bf1.docx>, Slides (Class 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_aafe2884cb6d41a9a706c841ccae8874.pdf>",
-    "deadlineClass": "10/24/2025",
-    "date2": "10/24"
+    "deadlineClass": "2025/10/24",
+    "date2": "2025/10/24"
   },
   {
     "session": "5",
-    "class": "Chapter 3<br><br>Constituency, <br>trees and rules (III): <br> Practice day",
-    "date": "10/31/2025",
+    "chapter": "Chapter 3",
+    "class": "Constituency, trees and rules (III): <br> Practice day",
+    "format": "face-to-face",
+    "date": "2025/10/31",
     "video": "1 Structural relations (14:00)<https://youtu.be/-qE1hMlf3oY>, After watching the video, please do the following assignment and submit it online (by midnight Nov 7), Assignment 4(pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e971d6d8e195450d885789cc7d51e3f0.pdf>, Assignment 4 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_4663bc21294f4f45bf084722714245da.docx>",
-    "deadlineHW": "11/6/2025",
+    "deadlineHW": "2025/11/6",
     "handout": "Slides (class 5)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c01d1e7b9f294f24bbd0bcec0cc5c4cf.pdf>",
-    "deadlineClass": "10/31/2025",
-    "date2": "10/31"
+    "deadlineClass": "2025/10/31",
+    "date2": "2025/10/31"
+  },
+  {
+    "session": "6",
+    "chapter": "Chapter 4",
+    "class": "Structural relation",
+    "format": "no class but make sure to submit your HW",
+    "date": "2025/11/7",
+    "video": "1 NPs (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>, ",
+    "deadlineHW": "2025/11/13",
+    "handout": "Answer key (Assgn 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7dded8a5ed5842f183636c03f0d5148f.pdf>[after 11/08/2025]",
+    "deadlineClass": "2025/11/7",
+    "date2": "2025/11/7"
   },
   {
     "session": "Part",
+    "chapter": "",
     "class": "Framework 2: X'-syntax",
+    "format": "",
     "date": "",
     "video": "",
     "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
-    "date2": ""
-  },
-  {
-    "session": "6",
-    "class": "Chapter 4<br><br>Structural relation",
-    "date": "",
-    "video": "1 N' (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>, ",
-    "deadlineHW": "11/13/2025",
-    "handout": "Answer key (Assgn 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7dded8a5ed5842f183636c03f0d5148f.pdf>[after 11/08/2025]",
-    "deadlineClass": "11/7/2025",
     "date2": ""
   },
   {
     "session": "7",
-    "class": "Chapter 6<br><br>X-bar syntax (I)",
-    "date": "11/14/2025",
+    "chapter": "Chapter 6",
+    "class": "X-bar syntax (I): <br>NP & VP",
+    "format": "face-to-face",
+    "date": "2025/11/14",
     "video": "Optional extra credit assignment:  you will earn extra points if you solve and submit it (Due 23:59 Nov 21). , Bonus HW (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9f783657cb44431c8e46016cc31ee476.docx>, Bonus HW (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9878d8a6b3054c69acb997ecc5599595.pdf>",
-    "deadlineHW": "11/27/2025",
+    "deadlineHW": "2025/11/27",
     "handout": "Assignment 5 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_85effd18ccc1431e8275d7a822555a57.pdf>, Assignment 5 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f2d31936e80849728a1e178e9293d76a.docx> , Slides (Class 7)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_bfbc147f673a42349926cee167179805.pdf>[after 11/15/2025]",
-    "deadlineClass": "11/14/2025",
-    "date2": "11/14"
+    "deadlineClass": "2025/11/14",
+    "date2": "2025/11/14"
   },
   {
     "session": "",
+    "chapter": "",
     "class": "No class (Mitasai)",
-    "date": "11/21/2025",
+    "format": "",
+    "date": "2025/11/21",
     "video": "1 Compl/adjunct (25:53) <https://www.youtube.com/watch?v=1avF6TiLnmA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=4>, 2 How to draw trees (13:14)<https://www.youtube.com/watch?v=-wpfH32fjdA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=5>, 3 X-bar parameters (7:35)<https://www.youtube.com/watch?v=BCW7u8-DyvQ&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=6>",
     "deadlineHW": "",
     "handout": "Answer key for Bonus HW<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7975e806d52a4b449d8a978369c51be3.pdf>[after 11/22/2025]",
     "deadlineClass": "",
-    "date2": "11/21"
+    "date2": "2025/11/21"
   },
   {
     "session": "8",
-    "class": "Chapter 6<br><br>X-bar syntax (II)",
-    "date": "11/28/2025",
-    "video": "1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 2 TPs [A] (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, Slides<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_0e2f64c5ad164a6d8748e9c248200efd.pdf>, 3 TPs [B] (8:40)<https://youtu.be/3Tey2S7GyyY>, After watching the videos complete the following assignment and post it online (Due 13:00 Dec 5 = before the next class starts)., Assignment 7 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_96677390ad3540089a0ad8fb80a9c724.docx>, Assignment 7 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_a9bde1a75d1b4d74968486c1f4383ca4.pdf>",
-    "deadlineHW": "12/4/2025",
+    "chapter": "Chapter 6",
+    "class": "X-bar syntax (II)",
+    "format": "face-to-face",
+    "date": "2025/11/28",
+    "video": "1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 2 TPs [A] (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, 3 TPs [B] (8:40)<https://youtu.be/3Tey2S7GyyY>,  4 CPs (6:12)<https://youtu.be/DHvKlFjjaCw>,  After watching the videos complete the following assignment and post it online (Due 13:00 Dec 5 = before the next class starts)., Assignment 7 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_96677390ad3540089a0ad8fb80a9c724.docx>, Assignment 7 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_a9bde1a75d1b4d74968486c1f4383ca4.pdf>",
+    "deadlineHW": "2025/12/4",
     "handout": "Assignment 6 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_611aad0fbf034f43aee620c92a86e026.pdf>, Assignment 6 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9b1cf07032c047fcbc97dadf94bd094f.docx>, Answer key (Assgn 6)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f08fdbef452a4ad5b25935c85f2998f5.pdf>[after 11/29/2025]",
-    "deadlineClass": "11/28/2025",
-    "date2": "11/28"
+    "deadlineClass": "2025/11/28",
+    "date2": "2025/11/28"
   },
   {
     "session": "9",
-    "class": "Chapter 7<br><br>Extending X-bar <br>Theory <br><br>Note we will cover only the material up through Section 7.2.<br><br>",
-    "date": "12/5/2025",
-    "video": "1 Overgeneration (8:30)<https://www.youtube.com/watch?v=KZHbArrgnrA&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru>, 2 Thematic relations (9:31)<https://www.youtube.com/watch?v=17JjiDJ7H40&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=2>, 3 Theta roles (19:42)<https://www.youtube.com/watch?v=Z9JaClNzR-E&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=3>, 4 Expletives and EPP (11:07)<https://www.youtube.com/watch?v=xKJYA9iCQ4g&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=4>",
-    "deadlineHW": "12/11/2025",
+    "chapter": "Chapter 7",
+    "class": "Extending X-bar Theory (I): <br>DP, TP & CP",
+    "format": "face-to-face",
+    "date": "2025/12/5",
+    "video": "1 From Tense to Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 2 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>",
+    "deadlineHW": "2025/12/11",
     "handout": "Answer key for Assgn 7 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_201bad8a603e4f4e98c9ae31f9d285d3.pdf>[after 13:00 12/05/2025], Assignment 8 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ac5f15fcd9d344c8bfaf43c2f895d24d.docx>, Assignment 8 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8f8b54339f0746c99d9e88309a97b8b1.pdf>, Answer key for Assgn 8<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_81a20de288c44d74a54f3e6ac175b457.pdf>[after 12/06/2025]",
-    "deadlineClass": "12/5/2025",
-    "date2": "12/5"
+    "deadlineClass": "2025/12/5",
+    "date2": "2025/12/5"
+  },
+  {
+    "session": "10",
+    "chapter": "Chapter 7",
+    "class": "Extending X-bar Theory (II): <br> PerfP, ProgP & VoiceP",
+    "format": "face-to-face",
+    "date": "2025/12/12",
+    "video": "1 Overgeneration (8:30)<https://www.youtube.com/watch?v=KZHbArrgnrA&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru>,2 Thematic relations (9:31)<https://www.youtube.com/watch?v=17JjiDJ7H40&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=2>, 3 Theta roles (19:42)<https://www.youtube.com/watch?v=Z9JaClNzR-E&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=3>, 4 Expletives and EPP (11:07)<https://www.youtube.com/watch?v=xKJYA9iCQ4g&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=4>",
+    "deadlineHW": "2025/12/18",
+    "handout": "",
+    "deadlineClass": "2025/12/12",
+    "date2": "2025/12/12"
   },
   {
     "session": "Part",
+    "chapter": "",
     "class": "Displacement properties",
+    "format": "",
     "date": "",
     "video": "",
     "deadlineHW": "",
@@ -620,60 +687,60 @@ const scheduleData =
     "date2": ""
   },
   {
-    "session": "10",
-    "class": "Chapter 8<br><br>Theta Theory",
-    "date": "",
-    "video": "",
-    "deadlineHW": "12/18/2025",
-    "handout": "",
-    "deadlineClass": "12/12/2025",
-    "date2": ""
-  },
-  {
     "session": "11",
-    "class": "Chapter 9<br><br>Theta Grids and <br>Functional Categories",
-    "date": "12/26/2025",
-    "video": "1 V-to-T (33:41)<https://www.youtube.com/watch?v=rRRF__W9zBg&list=PL1ymN_px3GFTyelzNeuNO3zDU-e6U2jUz>, 2 CPs (13:05)<https://www.youtube.com/watch?v=YgLYDx9boqk&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=3>, 3 T-to-C (11:06)<https://www.youtube.com/watch?v=an-GGTWdPj0&list=PL1ymN_px3GFTyelzNeuNO3zDU-e6U2jUz&index=2>",
-    "deadlineHW": "12/25/2025",
+    "chapter": "Chapter 8",
+    "class": "Theta Theory",
+    "format": "no class but make sure to submit your HW",
+    "date": "2025/12/19",
+    "video": "1 V-to-T (33:41)<https://www.youtube.com/watch?v=rRRF__W9zBg&list=PL1ymN_px3GFTyelzNeuNO3zDU-e6U2jUz>,2 T-to-C (11:06)<https://www.youtube.com/watch?v=an-GGTWdPj0&list=PL1ymN_px3GFTyelzNeuNO3zDU-e6U2jUz&index=2>",
+    "deadlineHW": "2025/12/25",
     "handout": "",
-    "deadlineClass": "12/19/2025",
-    "date2": "12/26"
+    "deadlineClass": "2025/12/19",
+    "date2": "2025/12/19"
   },
   {
     "session": "12",
-    "class": "Chapter 10<br><br>Head Movement",
-    "date": "1/9/2026",
+    "chapter": "Chapter 10",
+    "class": "Head Movement",
+    "format": "face-to-face",
+    "date": "2025/12/26",
     "video": "1 Raising (9:16)<https://www.youtube.com/watch?v=xUmSd_DcsxA&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v>, 2 Case Theory (18:29)<https://www.youtube.com/watch?v=1SUpzwS8n44&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=2>, 3 Passives (16:02)<https://www.youtube.com/watch?v=dhd1WELhyXk&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=3>, 4 Unaccusatives (11:09) <https://www.youtube.com/watch?v=8qwguC47LTY&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=4>",
-    "deadlineHW": "1/8/2026",
+    "deadlineHW": "2026/1/8",
     "handout": "",
-    "deadlineClass": "12/26/2025",
-    "date2": "1/9"
+    "deadlineClass": "2025/12/26",
+    "date2": "2025/12/26"
   },
   {
     "session": "13",
-    "class": "Chapter 11<br><br>DP Movement [Part 1]",
-    "date": "1/23/2026",
-    "video": "",
-    "deadlineHW": "1/22/2026",
+    "chapter": "Chapter 11",
+    "class": "DP Movement",
+    "format": "face-to-face",
+    "date": "2026/1/9",
+    "video": "1 Wh-movement (15:07)<https://www.youtube.com/watch?v=rycBQT2S0Fo&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=1>, 2 Simple derivation (8:35)<https://www.youtube.com/watch?v=x5hmsYvL0rU&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=2>, 3 Traces (9:09)<https://www.youtube.com/watch?v=H1hJIcNiUcw&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=6>",
+    "deadlineHW": "2026/1/22",
     "handout": "",
-    "deadlineClass": "1/9/2026",
-    "date2": "1/23"
+    "deadlineClass": "2026/1/9",
+    "date2": "2026/1/9"
   },
   {
     "session": "14",
-    "class": "",
-    "date": "",
-    "video": "1 Selection (13:35)<https://www.youtube.com/watch?v=rR7L20BRYYA&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb>, 2 Auxiliaries (23:42)<https://www.youtube.com/watch?v=cJ5iv3th4iQ&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=2>, 3 Do support (5:36)<https://www.youtube.com/watch?v=TNr1S-07uSY&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=3>, Be Have and Do (5:16)<https://www.youtube.com/watch?v=Qnx8_p5gvUw&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=4>",
-    "deadlineHW": "1/29/2026",
+    "chapter": "Chapter 12",
+    "class": "Wh-movement",
+    "format": "face-to-face",
+    "date": "2026/1/23",
+    "video": "Prepare for the final!!",
+    "deadlineHW": "2026/1/29",
     "handout": "",
-    "deadlineClass": "1/23/2026",
-    "date2": ""
+    "deadlineClass": "2026/1/23",
+    "date2": "2026/1/23"
   },
   {
-    "session": "Test",
+    "session": "Part",
+    "chapter": "",
     "class": "Final exam",
+    "format": "face-to-face",
     "date": "",
-    "video": "1 Tense; Mood; Modality; Aspect; and Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 2 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>",
+    "video": "1 Selection (13:35)<https://www.youtube.com/watch?v=rR7L20BRYYA&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb>, 2 Auxiliaries (23:42)<https://www.youtube.com/watch?v=cJ5iv3th4iQ&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=2>, 3 Do support (5:36)<https://www.youtube.com/watch?v=TNr1S-07uSY&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=3>, Be Have and Do (5:16)<https://www.youtube.com/watch?v=Qnx8_p5gvUw&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=4>",
     "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
@@ -682,6 +749,8 @@ const scheduleData =
 ]
 ;
 const GeneralComment = "";
+// セクションタイトルの識別子を定義
+const SECTION_TITLE_IDENTIFIER = "Part";
 // =====================
 // UI elements
 // =====================
@@ -697,15 +766,26 @@ const tableTemplate = document.getElementById('tableTemplate');
 // ----------------------
 // Utilities
 // ----------------------
+/* ↓↓↓ 変更: 日付パース関数を修正 (YYYY/MM/DD形式に対応) ↓↓↓ */
+/**
+ * スケジュールデータの日付 (YYYY/MM/DD形式) をパースする。
+ * 期限はその日の終わり (23:59:59) とする。
+ */
 function parseDeadlineAsLocal(deadlineStr){
   if(!deadlineStr) return null;
   const parts = deadlineStr.split('/').map(x=>parseInt(x,10));
   if(parts.length<3 || parts.some(isNaN)) return null;
-  const [m,d,y] = parts;
+  // YYYY/MM/DD形式なので [y, m, d] で受け取る (元は [m, d, y] だったためバグっていた)
+  const [y,m,d] = parts;
   // 期限は指定日の終わり (23:59:59)
   return new Date(y,m-1,d,23,59,59);
 }
+/* ↑↑↑ 変更 ↑↑↑ */
 /* 時刻指定に対応した利用開始日時パース関数 ↓↓↓ */
+/**
+ * コンテンツの利用開始日時 (MM/DD/YYYY形式または HH:mm MM/DD/YYYY形式) をパースする。
+ * ※この関数はscheduleData本体ではなく、handoutやvideo内の[after ...]タグを処理するために使用される。
+ */
 function parseAvailableFromAsLocal(dateStr){
   if(!dateStr) return null;
   let hour = 0;
@@ -724,6 +804,7 @@ function parseAvailableFromAsLocal(dateStr){
   const dateParts = datePart.split('/').map(x=>parseInt(x,10));
   if(dateParts.length < 3 || dateParts.some(isNaN)) return null;
   
+  // MM/DD/YYYY形式なので [m, d, y] で受け取る
   const [m, d, y] = dateParts;
   // 利用開始は指定日の指定時刻 (デフォルトは 00:00:00)
   return new Date(y, m-1, d, hour, minute, 0);
@@ -775,16 +856,19 @@ function findRelevantSessions() {
     const futureClasses = [];
     // scheduleDataが時系列順に並んでいることを前提とする
     for (const item of scheduleData) {
-        /* ↓↓↓ 追加: "session": "Title" の行はNext Class等の判定に含めない ↓↓↓ */
-        if (item.session === "Title") {
+        /* ↓↓↓ 修正: 定義した識別子（"Part"）を使って判定 ↓↓↓ */
+        if (item.session === SECTION_TITLE_IDENTIFIER) {
             continue;
         }
-        /* ↑↑↑ 追加 ↑↑↑ */
+        /* ↑↑↑ 修正 ↑↑↑ */
+        // 判定基準となる日付は deadlineClass を優先し、なければ date を使用する
         const dateStr = item.deadlineClass || item.date;
         if (dateStr) {
              // parseDeadlineAsLocal は指定日の 23:59:59 を返す
              const sessionDateEnd = parseDeadlineAsLocal(dateStr);
-             if (sessionDateEnd) {
+             
+             // 日付が正しくパースできた場合のみ判定を行う
+             if (sessionDateEnd && !isNaN(sessionDateEnd.getTime())) {
                  if (today > sessionDateEnd) {
                      // 終了時刻を過ぎている場合は過去
                      pastClasses.push(item);
@@ -792,15 +876,18 @@ function findRelevantSessions() {
                      // まだ終了していない場合は未来（当日も含む）
                      futureClasses.push(item);
                  }
+             } else {
+                // 日付形式が不正などでパースできなかった場合は、ログを出力しつつ未来として扱う（安全側）
+                console.warn("Could not parse date for session:", item.session, dateStr);
+                futureClasses.push(item);
              }
         } else {
             // 日付がない場合 (例: Session 0の開始前や、Testなどリストの最後)。
             // これらは未来の予定として扱う。
-            // ただし、日付がなくsessionが空のもの（例: No class (Mitasai)）もここに含まれるが、
-            // 授業としてカウントすることは問題ないため、そのままfutureClassesに追加する。
             futureClasses.push(item);
         }
     }
+    
     // Last Classの特定
     if (pastClasses.length > 0) {
         // 過去のクラスの中で最後（直近）のもの
@@ -813,12 +900,26 @@ function findRelevantSessions() {
         }
     }
     // Next Class と After Next Class の特定
-    if (futureClasses.length > 0) {
-        nextClass = futureClasses[0];
-        if (futureClasses.length > 1) {
-            afterNextClass = futureClasses[1];
+    // コース開始前（pastClassesが空）の場合、Session 0がLast Classで表示されるため、Nextからは除外する。
+    let relevantFutureClasses = futureClasses;
+    if (pastClasses.length === 0) {
+        relevantFutureClasses = futureClasses.filter(i => String(i.session) !== "0");
+    }
+    if (relevantFutureClasses.length > 0) {
+        // 未来のクラスの最初のものから順に特定
+        let nextIndex = 0;
+        
+        // Next Class
+        if (nextIndex < relevantFutureClasses.length) {
+            nextClass = relevantFutureClasses[nextIndex];
+            nextIndex++;
+        }
+        // After Next Class
+        if (nextIndex < relevantFutureClasses.length) {
+            afterNextClass = relevantFutureClasses[nextIndex];
         }
     }
+    
     return { lastClass, nextClass, afterNextClass };
 }
 /* ↑↑↑ 追加 ↑↑↑ */
@@ -890,15 +991,15 @@ function renderTable(tableId, item, emptyMessage = null) {
     if (!tbody) return;
     tbody.innerHTML = '';
     if (item) {
-        // Overviewモードでは検索フィルタリングは適用しない
         tbody.appendChild(createRow(item));
     } else if (emptyMessage) {
-        // アイテムがなく、メッセージがある場合は表示
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 4; // 4列構成
+        /* ↓↓↓ 変更: 6列構成に対応 (5 -> 6) ↓↓↓ */
+        td.colSpan = 6; 
+        /* ↑↑↑ 変更 ↑↑↑ */
         td.textContent = emptyMessage;
-        td.className = 'empty-message-cell'; // CSSで定義したスタイル
+        td.className = 'empty-message-cell';
         tr.appendChild(td);
         tbody.appendChild(tr);
     }
@@ -930,10 +1031,15 @@ function filterText(item,text){
   if(!text) return true;
   text = text.toLowerCase();
   // タイトル行も検索対象に含めるため、item.classで検索する
-  return (item.class.toLowerCase().includes(text) || (item.reading && item.reading.toLowerCase().includes(text)) || (item.comment && item.comment.toLowerCase().includes(text)));
+  // Date列も検索対象に含める
+  return (item.class.toLowerCase().includes(text) || 
+          (item.date && item.date.toLowerCase().includes(text)) ||
+          (item.date2 && item.date2.toLowerCase().includes(text)) ||
+          (item.reading && item.reading.toLowerCase().includes(text)) || 
+          (item.comment && item.comment.toLowerCase().includes(text)));
 }
 function renderFull(){
-  /* ↓↓↓ 変更: ターゲットテーブル(#scheduleTableFull)のtbodyを取得 ↓↓↓ */
+ 
   const tbody = document.querySelector('#scheduleTableFull tbody');
   if (!tbody) return;
   tbody.innerHTML='';
@@ -943,140 +1049,131 @@ function renderFull(){
   });
 }
 function createRow(item){
-  /* ↓↓↓ 追加: "session": "Title" の場合の特別処理 ↓↓↓ */
-  if (item.session === "Title") {
+  /* ↓↓↓ 修正: セクションタイトル行の処理 ↓↓↓ */
+  if (item.session === SECTION_TITLE_IDENTIFIER) {
     const tr = document.createElement('tr');
-    tr.className = 'section-title-row'; // CSSクラスを適用
+    tr.className = 'section-title-row';
     const tdTitle = document.createElement('td');
-    tdTitle.colSpan = 4; // 4列すべてを結合
-    tdTitle.textContent = item.class; // "class"の内容を表示
+    tdTitle.colSpan = 6; // ★変更: 5列結合 -> 6列結合に変更
+    tdTitle.textContent = item.class;
     tr.appendChild(tdTitle);
-    return tr; // ここで処理を終了して返す
+    return tr;
   }
-  /* ↑↑↑ 追加 ↑↑↑ */
-  const tr = document.createElement('tr');
-  const today = new Date();
-  const deadlineDate = parseDeadlineAsLocal(item.deadlineClass);
-  const deadlineDate2 = parseDeadlineAsLocal(item.deadlineHW);
-  const hwClass = deadlineDate ? (today <= deadlineDate ? 'hw-due' : 'hw-past') : '';
-  const hwClass2 = deadlineDate2 ? (today <= deadlineDate2 ? 'hw-due' : 'hw-past') : '';
-  const tdSession = document.createElement('td');
-  tdSession.textContent = item.session;
-  // ★ 変更点1: tdSession に hwClass を追加
-  tdSession.className = "col1 " + hwClass;
-   const tdClass = document.createElement('td');
-  // item.class の内容をそのままHTMLとして設定
-  const classContent = item.class || ''; 
-  const dateContent = item.date2 || ''; // date2を取得
-  // HTMLとして挿入。既存の classContent に <br> が含まれていることを期待。
-  // date2がある場合、その前に強制的に <br> で改行を挿入。
-  tdClass.innerHTML = classContent + (dateContent ? '<br>' + dateContent : ''); 
-  
-  tdClass.className = "col2 " + hwClass;
-  const tdHandout = document.createElement('td');
-  tdHandout.className = "col3 " + hwClass; 
-  
-  // item.handout の文字列をパース処理にかける
-  const handoutRaw = (item.handout || '').replace(/<br\s*\/?>/gi, '\n');
-  const handoutEntries = parseEntries(handoutRaw);
-  
-  // パース結果を元に要素を生成
-  handoutEntries.forEach((entry, index) => {
-    // 2行目以降の場合、改行(<br>)を挿入する
-    if (index > 0) {
-      tdHandout.appendChild(document.createElement('br'));
-    }
-       if (entry.url) {
-      // URLがある場合はリンク(aタグ)を生成
-      const a = document.createElement('a');
-      a.className = 'handout-link'; // 既存のリンクスタイルを再利用
-      a.textContent = entry.label;
-        /* ↓↓↓ 変更: アクティベーション日時チェック (today変数は関数の冒頭で定義済み) ↓↓↓ */
-        let isAvailable = true;
+  /* ↑↑↑ 修正 ↑↑↑ */
+  const tr = document.createElement('tr');
+  const today = new Date();
+  const deadlineDate = parseDeadlineAsLocal(item.deadlineClass);
+  const deadlineDate2 = parseDeadlineAsLocal(item.deadlineHW);
+  const hwClass = (deadlineDate && !isNaN(deadlineDate.getTime())) ? (today <= deadlineDate ? 'hw-due' : 'hw-past') : '';
+  const hwClass2 = (deadlineDate2 && !isNaN(deadlineDate2.getTime())) ? (today <= deadlineDate2 ? 'hw-due' : 'hw-past') : '';
+  // --- Session Cell (Col 1) ---
+  const tdSession = document.createElement('td');
+  tdSession.textContent = item.session;
+  tdSession.className = "col1 " + hwClass;
+  // --- Date Cell (Col 2) ---
+  const tdDate = document.createElement('td');
+  const dateContent = item.date2 || item.date || '';
+  // formatプロパティがある場合、改行して追加
+  if (item.format) {
+    // innerHTMLを使用して<br>タグを有効にする
+    // (スタイル調整のためspanタグで囲んでいますが、不要なら外しても構いません)
+    tdDate.innerHTML = `${dateContent}<br><br><span style="font-size:0.85em; color:var(--muted);">${item.format}</span>`;
+  } else {
+    tdDate.textContent = dateContent;
+  }
+  
+  tdDate.className = "col-date " + hwClass;
+  // --- ★新規: Chapter Cell (Col 3) ---
+  const tdChapter = document.createElement('td');
+  // jsonに<br>が含まれている場合があるのでinnerHTMLを使用
+  tdChapter.innerHTML = item.chapter || ''; 
+  tdChapter.className = "col-chapter " + hwClass;
+  // --- Class Cell (Col 4) ---
+  const tdClass = document.createElement('td');
+  const classContent = item.class || ''; 
+  tdClass.innerHTML = classContent;
+  tdClass.className = "col2 " + hwClass;
+  // --- Handout/Docs Cell (Col 5) ---
+  const tdHandout = document.createElement('td');
+  tdHandout.className = "col3 " + hwClass; 
+  
+  const handoutRaw = (item.handout || '').replace(/<br\s*\/?>/gi, '\n');
+  const handoutEntries = parseEntries(handoutRaw);
+  
+  handoutEntries.forEach((entry, index) => {
+    if (index > 0) {
+      tdHandout.appendChild(document.createElement('br'));
+    }
+    if (entry.url) {
+      const a = document.createElement('a');
+      a.className = 'handout-link';
+      a.textContent = entry.label;
+      let isAvailable = true;
+      if (entry.availableAfterStr) {
+        const availableStartTime = parseAvailableFromAsLocal(entry.availableAfterStr);
+        if (!availableStartTime || isNaN(availableStartTime.getTime()) || today < availableStartTime) {
+          isAvailable = false;
+        }
+      }
+      if (isAvailable) {
+        a.href = entry.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      } else {
+        a.classList.add('disabled');
+        a.setAttribute('aria-disabled', 'true');
         if (entry.availableAfterStr) {
-          // parseAvailableFromAsLocal は指定日の 00:00:00 を返す
-          const availableStartTime = parseAvailableFromAsLocal(entry.availableAfterStr);
-          // 現在時刻(today)が開始時刻より「前」であれば無効
-          if (availableStartTime && today < availableStartTime) {
-            isAvailable = false;
-          }
+          a.title = `Available from ${entry.availableAfterStr}`;
         }
-        if (isAvailable) {
-        /* ↑↑↑ 追加 ↑↑↑ */
-          a.href = entry.url;
-          a.target = '_blank'; /* ←変更後 */
-          a.rel = 'noopener noreferrer';
-        /* ↓↓↓ 追加 ↓↓↓ */
-        } else {
-          // 無効な場合の処理
-          a.classList.add('disabled');
-          a.setAttribute('aria-disabled', 'true');
-          // マウスオーバーでいつから有効か表示
-          if (entry.availableAfterStr) {
-            a.title = `Available from ${entry.availableAfterStr}`;
-          }
-        }
-        /* ↑↑↑ 追加 ↑↑↑ */
-      tdHandout.appendChild(a);
-    } else {
-      // URLがない場合は通常のテキストとして追加
-      tdHandout.appendChild(document.createTextNode(entry.label));
-    }
-  });
- // Videos column
-  const tdVideos = document.createElement('td');
-  // tdVideos.textContent=item.comment || ''; // 元のコードにあったがitem.commentはデータにないため不要
-  tdVideos.className = "col4 " + hwClass2; 
-  const videos = parseEntries(item.video);
-  if(videos.length){
-    const ul = document.createElement('ul'); ul.className='video-list';
-    videos.forEach(v=>{
-      const li = document.createElement('li');
-         if(v.url){
-        const anchor = document.createElement('a');
-        anchor.className='video-btn';
-        anchor.textContent=v.label;
-        /* ↓↓↓ 変更: アクティベーション日時チェック ↓↓↓ */
+      }
+      tdHandout.appendChild(a);
+    } else {
+      tdHandout.appendChild(document.createTextNode(entry.label));
+    }
+  });
+  // --- Videos Cell (Col 6) ---
+  const tdVideos = document.createElement('td');
+  tdVideos.className = "col4 " + hwClass2; 
+  const videos = parseEntries(item.video);
+  if(videos.length){
+    const ul = document.createElement('ul'); ul.className='video-list';
+    videos.forEach(v=>{
+      const li = document.createElement('li');
+      if(v.url){
+        const anchor = document.createElement('a');
+        anchor.className='video-btn';
+        anchor.textContent=v.label;
         let isAvailable = true;
         if (v.availableAfterStr) {
-          // parseAvailableFromAsLocal は指定日の 00:00:00 を返す
           const availableStartTime = parseAvailableFromAsLocal(v.availableAfterStr);
-          // 現在時刻(today)が開始時刻より「前」であれば無効
-          if (availableStartTime && today < availableStartTime) {
+          if (!availableStartTime || isNaN(availableStartTime.getTime()) || today < availableStartTime) {
             isAvailable = false;
           }
         }
         if (isAvailable) {
-        /* ↑↑↑ 変更 ↑↑↑ */
-          anchor.href = v.url;
-          anchor.target = '_blank'; /* ←新しいタブで開く設定に変更 */
-          /* ↓セキュリティ対策のため追加することを推奨します */
+          anchor.href = v.url;
+          anchor.target = '_blank';
           anchor.rel = 'noopener noreferrer';
-        /* ↓↓↓ 追加 ↓↓↓ */
         } else {
-          // 無効な場合の処理
           anchor.classList.add('disabled');
           anchor.setAttribute('aria-disabled', 'true');
-          // マウスオーバーでいつから有効か表示
           if (v.availableAfterStr) {
-            /* ▼▼▼ 変更: "Available from"に変更 ▼▼▼ */
             anchor.title = `Available from ${v.availableAfterStr}`;
           }
         }
-        /* ↑↑↑ 追加 ↑↑↑ */
-        li.appendChild(anchor);
-      } else {
-        li.textContent=v.label;
-      }
-      ul.appendChild(li);
-    });
-    tdVideos.appendChild(ul);
-  }
-  
-// 最終的な行への追加処理
-  // [tdSession, tdClass, tdDate, tdHandout, tdVideos] のうち tdDate を削除
-  [tdSession, tdClass, tdHandout, tdVideos].forEach(td=>tr.appendChild(td));
-  return tr;
+        li.appendChild(anchor);
+      } else {
+        li.textContent=v.label;
+      }
+      ul.appendChild(li);
+    });
+    tdVideos.appendChild(ul);
+  }
+  
+  // [Session, Date, Chapter, Class, Handout, Videos] の順序
+  [tdSession, tdDate, tdChapter, tdClass, tdHandout, tdVideos].forEach(td=>tr.appendChild(td));
+  
+  return tr;
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
