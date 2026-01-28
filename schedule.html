@@ -141,12 +141,11 @@ table{
 	table-layout: fixed;
 	}
 /* PC表示時の列幅設定（より広い画面での動作） */
-table colgroup col:nth-child(1) { width: 5% !important; }  /* Session */
-table colgroup col:nth-child(2) { width: 11% !important; } /* Date */
+table colgroup col:nth-child(1) { width: 6% !important; }  /* Session */
+table colgroup col:nth-child(2) { width: 12% !important; } /* Date */
 table colgroup col:nth-child(3) { width: 12% !important; } /* Chapter */
-table colgroup col:nth-child(4) { width: 20% !important; } /* Class  */
-table colgroup col:nth-child(5) { width: 22% !important; } /* Docs  */
-table colgroup col:nth-child(6) { width: 30% !important; } /* Videos  */
+table colgroup col:nth-child(4) { width: 27% !important; } /* Class  */
+table colgroup col:nth-child(5) { width: 43% !important; } /* Docs  */
 thead th{
 	position:sticky;
 	top:0;
@@ -164,7 +163,6 @@ tbody td{
     word-break: break-word;     /* 長い文字列を強制的に折り返す */
     overflow-wrap: break-word;  /* 標準的な折り返し設定 */
 }
-/* ↓↓↓ 変更: タイトル行(.section-title-row)を除外してホバーを適用 ↓↓↓ */
 tbody tr:not(.section-title-row):hover{background:linear-gradient(90deg,rgba(59,130,246,0.05),transparent)}
 .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#dbeafe;border:1px solid #bfdbfe;color:var(--accent);font-weight:600}
 .video-list{
@@ -242,13 +240,12 @@ body {
 		word-break: break-word;  
 	}
 	/* 列幅の調整 */
- /*  5列構成に対応 */
-table colgroup col:nth-child(1) { width: 6%; }  /* Session */
-  table colgroup col:nth-child(2) { width: 10%; } /* Date */
-  table colgroup col:nth-child(3) { width: 15%; } /* Chapter */
-  table colgroup col:nth-child(4) { width: 29%; } /* Class */
-  table colgroup col:nth-child(5) { width: 10%; } /* Docs */
-  table colgroup col:nth-child(6) { width: 30%; } /* Videos */
+ /* 5列構成に対応 */
+  table colgroup col:nth-child(1) { width: 8%; }  /* Session */
+  table colgroup col:nth-child(2) { width: 15%; } /* Date */
+  table colgroup col:nth-child(3) { width: 17%; } /* Chapter */
+  table colgroup col:nth-child(4) { width: 40%; } /* Class */
+  table colgroup col:nth-child(5) { width: 20%; } /* Docs */
   #scheduleTable {
     width: 100%;
     table-layout: fixed; /* 列幅を均等割り */
@@ -400,7 +397,26 @@ a.handout-link{
   /* 境界線を少しはっきりさせる */
   border-bottom: 1px solid var(--muted-gray-border);
 }
-/* ↑↑↑ 追加 ↑↑↑ */
+/* Video行（2行目）のスタイル */
+.video-row td {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  /* padding-left: 40px !important; ← 削除（テーブルの構造で位置合わせするため不要） */
+  vertical-align: top; /* 上揃えにしてDocs列の開始位置と合わせる */
+}
+.video-spacer {
+  background-color: #ffffff !important; /* ★ここを白に変更 */
+  border-right: none; /* コンテンツとの境界線を消してつながりをスムーズに */
+  /* border-bottom: none; ← もし左側の空白部分だけ下線も消したい場合は、ここを有効にしてください */
+}
+/* Video行のラベル */
+.video-row-label {
+  font-weight: 700;
+  font-size: 0.9em;
+  color: var(--accent);
+  margin-bottom: 6px;
+  display: block;
+}
 footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
 </style>
 </head>
@@ -442,7 +458,6 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
             <col class="col-chapter"> 
 			<col class="col2">
             <col class="col3">
-            <col class="col4">
         </colgroup>
         <thead>
             <tr>
@@ -451,7 +466,6 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
                 <th class="col-chapter">Chapter</th> 
 				<th class="col2">Class</th>
                 <th class="col3">Docs</th>
-                <th class="col4">Videos for next session</th>
             </tr>
         </thead>
     <tbody></tbody>
@@ -730,7 +744,7 @@ const scheduleData =
     "date": "",
     "video": "1 Wh-movement (15:07)<https://www.youtube.com/watch?v=rycBQT2S0Fo&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=1>, 2 Simple derivation (8:35)<https://www.youtube.com/watch?v=x5hmsYvL0rU&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=2>, 3 Traces (9:09)<https://www.youtube.com/watch?v=H1hJIcNiUcw&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=6>",
     "deadlineHW": "2026/1/22",
-    "handout": "",
+    "handout": "Assignment 13 (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_4926c01a00d54fdabfb55c59e2df3f72.pdf>, Assignment 13 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8cc7b9553024488a87f51ea05e083d73.docx>, Answer Key for Assgn 13 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_934cb90b600947d5a294b009a7a6606c.pdf>",
     "deadlineClass": "",
     "date2": ""
   },
@@ -742,7 +756,7 @@ const scheduleData =
     "date": "2026/1/23",
     "video": "Prepare for the final!!",
     "deadlineHW": "2026/1/29",
-    "handout": "Assignment 13 (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_4926c01a00d54fdabfb55c59e2df3f72.pdf>, Assignment 13 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8cc7b9553024488a87f51ea05e083d73.docx>, Answer Key for Assgn 13 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_934cb90b600947d5a294b009a7a6606c.pdf>",
+    "handout": "",
     "deadlineClass": "2026/1/23",
     "date2": "2026/1/23"
   },
@@ -753,6 +767,30 @@ const scheduleData =
     "format": "face-to-face",
     "date": "",
     "video": "1 Selection (13:35)<https://www.youtube.com/watch?v=rR7L20BRYYA&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb>, 2 Auxiliaries (23:42)<https://www.youtube.com/watch?v=cJ5iv3th4iQ&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=2>, 3 Do support (5:36)<https://www.youtube.com/watch?v=TNr1S-07uSY&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=3>, Be Have and Do (5:16)<https://www.youtube.com/watch?v=Qnx8_p5gvUw&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=4>",
+    "deadlineHW": "",
+    "handout": "",
+    "deadlineClass": "",
+    "date2": ""
+  },
+  {
+    "session": "Part",
+    "chapter": "",
+    "class": "",
+    "format": "",
+    "date": "",
+    "video": "",
+    "deadlineHW": "",
+    "handout": "",
+    "deadlineClass": "",
+    "date2": ""
+  },
+  {
+    "session": "",
+    "chapter": "Additional assignment for Lamia Mostofa",
+    "class": "",
+    "format": "",
+    "date": "",
+    "video": "Only for Mostofa<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_462b7b7669874b009ca6c25f57202827.pdf>[after 13:00 01/30/2026]",
     "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
@@ -1007,9 +1045,7 @@ function renderTable(tableId, item, emptyMessage = null) {
     } else if (emptyMessage) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        /* ↓↓↓ 変更: 6列構成に対応 (5 -> 6) ↓↓↓ */
-        td.colSpan = 6; 
-        /* ↑↑↑ 変更 ↑↑↑ */
+        td.colSpan = 5; 
         td.textContent = emptyMessage;
         td.className = 'empty-message-cell';
         tr.appendChild(td);
@@ -1061,18 +1097,21 @@ function renderFull(){
   });
 }
 function createRow(item){
-  /* ↓↓↓ 修正: セクションタイトル行の処理 ↓↓↓ */
+  // DocumentFragmentを使って複数行をまとめて返す
+  const frag = document.createDocumentFragment();
+  /* セクションタイトル行の処理 */
   if (item.session === SECTION_TITLE_IDENTIFIER) {
     const tr = document.createElement('tr');
     tr.className = 'section-title-row';
     const tdTitle = document.createElement('td');
-    tdTitle.colSpan = 6; // ★変更: 5列結合 -> 6列結合に変更
+    tdTitle.colSpan = 5; // 6列から5列に変更
     tdTitle.textContent = item.class;
     tr.appendChild(tdTitle);
-    return tr;
+    frag.appendChild(tr);
+    return frag;
   }
-  /* ↑↑↑ 修正 ↑↑↑ */
-  const tr = document.createElement('tr');
+  /* === 1行目: メイン情報 === */
+  const trMain = document.createElement('tr');
   const today = new Date();
   const deadlineDate = parseDeadlineAsLocal(item.deadlineClass);
   const deadlineDate2 = parseDeadlineAsLocal(item.deadlineHW);
@@ -1085,19 +1124,14 @@ function createRow(item){
   // --- Date Cell (Col 2) ---
   const tdDate = document.createElement('td');
   const dateContent = item.date2 || item.date || '';
-  // formatプロパティがある場合、改行して追加
   if (item.format) {
-    // innerHTMLを使用して<br>タグを有効にする
-    // (スタイル調整のためspanタグで囲んでいますが、不要なら外しても構いません)
     tdDate.innerHTML = `${dateContent}<br><br><span style="font-size:0.85em; color:var(--muted);">${item.format}</span>`;
   } else {
     tdDate.textContent = dateContent;
   }
-  
   tdDate.className = "col-date " + hwClass;
-  // --- ★新規: Chapter Cell (Col 3) ---
+  // --- Chapter Cell (Col 3) ---
   const tdChapter = document.createElement('td');
-  // jsonに<br>が含まれている場合があるのでinnerHTMLを使用
   tdChapter.innerHTML = item.chapter || ''; 
   tdChapter.className = "col-chapter " + hwClass;
   // --- Class Cell (Col 4) ---
@@ -1143,9 +1177,28 @@ function createRow(item){
       tdHandout.appendChild(document.createTextNode(entry.label));
     }
   });
-  // --- Videos Cell (Col 6) ---
+  // メイン行にセルを追加 (5列)
+  [tdSession, tdDate, tdChapter, tdClass, tdHandout].forEach(td=>trMain.appendChild(td));
+  frag.appendChild(trMain);
+  /* === 2行目: Videos (Homework) === */
+  const trVideo = document.createElement('tr');
+  trVideo.className = "video-row";
+  // 1. スペーサーセルを作成 (Session, Date, Chapter, Classの4列分を埋める)
+  const tdSpacer = document.createElement('td');
+  tdSpacer.colSpan = 4; 
+  tdSpacer.className = "video-spacer"; // 必要に応じてCSSで装飾
+  trVideo.appendChild(tdSpacer);
+  // 2. コンテンツセルを作成 (Docsの1列分に配置)
   const tdVideos = document.createElement('td');
-  tdVideos.className = "col4 " + hwClass2; 
+  // colspanは指定しない（デフォルト1）か、明示的に1を指定
+  tdVideos.colSpan = 1; 
+  // クラスはDocs列と同じスタイルを継承しつつ、期限の色設定(hwClass2)も適用
+  tdVideos.className = "col3 " + hwClass2; 
+  // ラベル追加
+  const label = document.createElement('span');
+  label.className = "video-row-label";
+  label.textContent = "Videos for next session:";
+  tdVideos.appendChild(label);
   const videos = parseEntries(item.video);
   if(videos.length){
     const ul = document.createElement('ul'); ul.className='video-list';
@@ -1180,12 +1233,19 @@ function createRow(item){
       ul.appendChild(li);
     });
     tdVideos.appendChild(ul);
+  } else {
+    // 動画がない場合
+    const span = document.createElement('span');
+    span.textContent = "None";
+    span.style.color = "var(--muted)";
+    span.style.fontStyle = "italic";
+    tdVideos.appendChild(span);
   }
   
-  // [Session, Date, Chapter, Class, Handout, Videos] の順序
-  [tdSession, tdDate, tdChapter, tdClass, tdHandout, tdVideos].forEach(td=>tr.appendChild(td));
+  trVideo.appendChild(tdVideos);
+  frag.appendChild(trVideo);
   
-  return tr;
+  return frag;
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
