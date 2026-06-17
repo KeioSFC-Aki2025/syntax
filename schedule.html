@@ -7,9 +7,72 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* --- グローバルナビゲーション用変数 --- */
+:root {
+  --gnav-font: 'Zen Maru Gothic', sans-serif;
+  --gnav-bg: #fcefee;
+  --gnav-text: #5a4a42;
+  --gnav-accent: #d35400;
+  --gnav-hover: #ffb7c5;
+}
+/* --- グローバルナビゲーション用CSS --- */
+.gnav-header {
+  text-align: center; padding: 2rem 1rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 3px dotted var(--gnav-hover);
+  position: sticky; top: 0; z-index: 1000; /* 他の要素より上に表示 */
+  font-family: var(--gnav-font);
+  color: var(--gnav-text);
+  line-height: 1.8;
+}
+.gnav-title { font-size: 2.5rem; font-weight: bold; margin: 0; color: var(--gnav-accent); text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+.gnav-nav { margin-top: 1.5rem; }
+.gnav-nav a {
+  text-decoration: none; color: var(--gnav-text); font-weight: bold;
+  margin: 0 10px; padding: 8px 16px; border-radius: 20px;
+  background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease; display: inline-block;
+}
+.gnav-nav a:hover { background-color: var(--gnav-hover); color: white; transform: translateY(-2px); }
+/* ドロップダウン */
+.gnav-dropdown { position: relative; display: inline-block; }
+.gnav-dropdown-content {
+  visibility: hidden; opacity: 0; position: absolute;
+  background-color: rgba(255, 255, 255, 0.95); 
+  width: max-content; white-space: nowrap;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-radius: 15px; padding: 10px;
+  z-index: 1100; top: 120%; left: 50%; transform: translateX(-50%) translateY(15px); 
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  backdrop-filter: blur(5px); display: flex; flex-direction: column; gap: 5px;
+}
+.gnav-dropdown-content a {
+  margin: 0 !important; box-shadow: none !important; transform: none !important;
+  border-radius: 10px; padding: 10px 15px; font-size: 0.95rem; text-align: center; background-color: transparent;
+}
+.gnav-dropdown-content a:hover { background-color: var(--gnav-bg); color: var(--gnav-accent); }
+.gnav-dropdown:hover .gnav-dropdown-content {
+  visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0);
+}
+/* 言語切り替え */
+.lang-toggle {
+  font-family: var(--gnav-font); font-weight: bold; color: #fff;
+  background-color: var(--gnav-accent); border: none; border-radius: 20px;
+  padding: 8px 16px; margin-left: 15px; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(211, 84, 0, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.lang-toggle:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 15px rgba(211, 84, 0, 0.4); }
+.lang-en { display: none; }
+body.is-en .lang-ja { display: none; }
+body.is-en .lang-en { display: inline; }
+@media (max-width: 768px) {
+  .gnav-title { font-size: 1.8rem; }
+  .gnav-nav a { margin: 5px; }
+}
 :root{
-  --bg:#e6f0ff;
+  --bg:#ffffff;
   --card:#ffffff;
+  
   --muted:#555555;
   --accent:#1e3a8a;
   --accent-2:#3b82f6;
@@ -141,11 +204,11 @@ table{
 	table-layout: fixed;
 	}
 /* PC表示時の列幅設定（より広い画面での動作） */
-table colgroup col:nth-child(1) { width: 6% !important; }  /* Session */
-table colgroup col:nth-child(2) { width: 12% !important; } /* Date */
-table colgroup col:nth-child(3) { width: 12% !important; } /* Chapter */
-table colgroup col:nth-child(4) { width: 27% !important; } /* Class  */
-table colgroup col:nth-child(5) { width: 43% !important; } /* Docs  */
+table colgroup col:nth-child(1) { width: 10% !important; }  /* Session */
+table colgroup col:nth-child(2) { width: 11% !important; } /* Date */
+table colgroup col:nth-child(3) { width: 11% !important; } /* Chapter */
+table colgroup col:nth-child(4) { width: 26% !important; } /* Class  */
+table colgroup col:nth-child(5) { width: 42% !important; } /* Docs  */
 thead th{
 	position:sticky;
 	top:0;
@@ -418,37 +481,1118 @@ a.handout-link{
   display: block;
 }
 footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
+ /* 1. コンテナの幅制限を解除（日程のために100%にする） */
+.tabs-container {
+  max-width: 100%;  /* ★ 800px から 100% に変更 */
+  margin: 0;        /* 余白をリセット */
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+}
+/* 2. タブメニュー：ここで幅を800pxに制限し、中央寄せ */
+.tab-menu {
+  display: flex;
+  width: 100%;
+  max-width: 800px; /* ★ 幅制限を追加 */
+  margin: 20px auto 0 auto; /* ★ 中央寄せ */
+  padding: 0;
+  list-style: none;
+  border-bottom: 3px solid #cbd5e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+/* 3. コンテンツエリア（共通）：基本は800pxで中央寄せ */
+.tab-content {
+  display: none;
+  max-width: 800px; /* ★ 幅制限を追加 */
+  margin: 0 auto 20px auto; /* ★ 中央寄せ */
+  padding: 25px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  line-height: 1.8;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+/* 4. 【新規追加】日程タブ(#schedule)だけ全幅（100%）にする上書き設定 */
+#schedule.tab-content {
+  max-width: 100%;  /* 幅制限を解除 */
+  padding: 0;       /* 余白調整（お好みで） */
+  margin: 0;
+  border: none;     /* 全幅の場合、枠線はない方が綺麗です */
+  border-radius: 0;
+  box-shadow: none;
+}
+/* 各リスト項目を均等に広げる */
+.tab-menu li {
+  flex: 1;              /* これで8等分される */
+  display: flex;
+}
+/* ボタンを枠内いっぱいに広げる */
+.tab-menu button {
+  width: 100%;          /* liの幅いっぱいに広げる */
+  padding: 12px 5px;    /* 左右の余白を少し削って文字入りを良くする */
+  font-size: 0.85rem;   /* 8項目あるので少し小さめが綺麗 */
+  white-space: nowrap;  /* 文字がはみ出しても改行させない */
+  text-align: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+  /* ホバー時とアクティブ時のスタイル */
+  .tab-menu button:hover {
+    color: #007bff;
+    background-color: #f8f9fa;
+  }
+  .tab-menu button.active {
+    color: #007bff;
+    border-bottom: 3px solid #007bff;
+  }
+  /* コンテンツエリア */
+  .tab-content {
+    display: none; /* 初期状態は非表示 */
+    padding: 25px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    line-height: 1.8;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  /* activeクラスがついているコンテンツだけ表示 */
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+  }
+  /* ふわっと表示させるアニメーション */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* 表のスタイル調整（前回のもの） */
+  .related-subjects-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .related-subjects-table td {
+    padding: 12px 5px;
+    border-bottom: 1px solid #eee;
+  }
+  .subject-name { font-weight: bold; }
+  .button {
+    display: inline-block;
+    padding: 5px 15px;
+    background-color: #007bff;
+    color: white !important;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  
+  
+  /* セクション全体 */
+#firstClass {
+  padding: 20px;
+  background-color: #ffffff; /* 背景が白であることを想定 */
+}
+/* 「■ ビデオ：」などのラベル */
+.section-title {
+  display: block;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333333; /* 濃いグレーで確実に見えるように */
+  margin: 20px 0 10px 0;
+}
+/* ビデオボタンの並び（グリッド） */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+/* ボタン本体のデザイン */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 15px;
+  
+  /* 見えやすくするための設定 */
+  background-color: #f0f0f0; /* 薄いグレーの背景 */
+  color: #1a1a1a !important; /* 文字をほぼ黒に（!importantで強制） */
+  border: 1px solid #cccccc; /* 枠線を少し濃く */
+  
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+/* ２．ホバーエフェクト（控えめ） */
+.button:hover {
+  background-color: #e2e2e2; /* 少しだけ暗くする */
+  border-color: #999999;     /* 枠線を少し強調 */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+/* 資料（PDF）ボタン：区別がつくように少し色を変える場合 */
+.pdf-button {
+  background-color: #fff0f0; 
+  border-color: #ffcccc;
+  color: #b30000 !important; /* 赤茶色 */
+}
+.pdf-button:hover {
+  background-color: #ffe5e5;
+  border-color: #b30000;
+}
+/* 成績のためのCSS */
+.grade-container {
+  max-width: 950px; /* 列が増えたので少し幅を広げました */
+  margin: 20px 0;
+  font-family: sans-serif;
+}
+.column-header {
+  background: #2c3e50; /* 少し落ち着いた紺色に */
+  color: #fff;
+  padding: 12px 15px;
+  font-weight: bold;
+  border-radius: 4px 4px 0 0;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+.data-table thead th {
+  background: #f8f9fa;
+  border-bottom: 2px solid #ccc;
+  padding: 12px;
+  font-size: 0.85em;
+  color: #666;
+  text-align: left;
+}
+.data-table th, .data-table td {
+  border: 1px solid #eee;
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+/* 各列の幅の目安 */
+.data-table th:nth-child(1) { width: 15%; } /* 項目 */
+.data-table th:nth-child(2) { width: 35%; } /* 内容 */
+.data-table th:nth-child(3) { width: 15%; } /* 比率 */
+.data-table th:nth-child(4) { width: 35%; } /* 条件 */
+.data-table tbody th {
+  background: #fdfdfd;
+}
+.center { text-align: center !important; }
+.red { color: #d32f2f !important; font-weight: bold; }
+.val { font-size: 1.1em; }
+.condition {
+  font-size: 0.9em;
+  background-color: #fffafa; /* 不可条件列に注意を促す背景色 */
+}
+.note-row td {
+  font-size: 0.85em;
+  color: #777;
+  background: #fdfdfd;
+}
+/* 下部の期限表示 */
+.deadline-footer {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px dashed #d32f2f;
+  background: #fffafa;
+  text-align: center;
+  border-radius: 8px;
+}
+/* 事前準備のCSS  */
+#study-guide {
+      max-width: 800px;
+      margin: 20px auto;
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+    /* メインメッセージの装飾 */
+    .study {
+      background: #fff5f5;
+      border: 2px solid #feb2b2;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .study .main-text {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .study .alert-text {
+      color: #e53e3e;
+      font-size: 1.5rem;
+      border-bottom: 3px solid #e53e3e;
+    }
+    /* 学習内容のグリッド配置 */
+    .study-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .study-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .study-item h3 {
+      margin-top: 0;
+      color: #2d3748;
+      border-left: 4px solid #4a5568;
+      padding-left: 10px;
+      font-size: 1.1rem;
+    }
+    .study-item p {
+      font-size: 0.95rem;
+      margin-bottom: 0;
+    }
+    /* 注意事項（フッター） */
+    .study-notice {
+      background: #edf2f7;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .study-notice .icon {
+      font-size: 2rem;
+    }
+    .study-notice .text b {
+      color: #2d3748;
+      font-size: 1.1rem;
+    }
+	
+	
+	
+	/* */
+	/* 左右に並べるための設定 */
+.resources-wrapper {
+  display: flex;
+  gap: 40px;      /* 左右の間隔 */
+  flex-wrap: wrap; /* スマホでは縦に並ぶ */
+  margin-top: 20px;
+  align-items: flex-start;
+}
+.resource-box {
+  flex: 1;        /* 左右均等な幅にする */
+  min-width: 300px; /* これより狭くなると縦に並ぶ */
+}
+/* セクションタイトルの調整 */
+.section-title {
+  display: block;
+  font-weight: bold;
+  margin: 15px 0 10px 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+/* ボタンの配置調整 */
+.file-area {
+  display: flex;
+  flex-direction: column; /* ボタンを縦に並べる */
+  gap: 10px;
+}
+.file-area .button {
+  width: 100%;      /* ボックスの幅いっぱいに広げる */
+  max-width: 300px; /* 広がりすぎないように制限 */
+}
+/* 提出先リンクの微調整 */
+.link-small {
+  font-size: 0.85em;
+  margin-left: 10px;
+  color: #0066cc;
+  text-decoration: underline;
+}
+.note-text {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+}
+	
+	/* ボタンを横に並べるための設定 */
+.file-area.flex-row {
+  display: flex;
+  flex-direction: row; /* 横並び */
+  gap: 10px;           /* ボタン間の隙間 */
+  flex-wrap: wrap;     /* 幅が狭いときは折り返す */
+}
+/* ボタンが横に並んだとき、幅が広がりすぎないように調整 */
+.file-area.flex-row .button {
+  flex: 1;             /* 同じ幅で並べる */
+  min-width: 140px;    /* ボタンが小さくなりすぎない限界 */
+  padding: 10px 5px;   /* 横に並ぶので余白を少し詰める */
+  font-size: 13px;     /* 文字サイズを微調整 */
+}
+/* （参考）docxボタンの色を変える場合 */
+.docx-button {
+  background-color: #f0f7ff !important;
+  border-color: #cce0ff !important;
+  color: #0056b3 !important;
+}
+   /* 概要タブ専用のスタイル */
+    /* 概要タブ全体のレイアウト */
+    .summary-grid {
+      display: grid;
+      /* 画面幅に応じて1列〜2列（または3列）に自動調整 */
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .summary-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border-top: 5px solid #4a5568;
+      display: flex;
+      flex-direction: column;
+    }
+    .summary-card h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1a202c;
+    }
+    .summary-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #4a5568;
+    }
+    /* 担当教員セクション独自のスタイル */
+    .instructor-info {
+      font-size: 0.9rem;
+      border-top: 1px solid #edf2f7;
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    .instructor-info a {
+      color: #3182ce;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .instructor-info a:hover {
+      text-decoration: underline;
+    }
+    /* 装飾用：ハイライトとフロー */
+    .highlight {
+      font-weight: bold;
+      background: linear-gradient(transparent 20%, #fff3cd 70%);
+    }
+    .method-flow {
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .flow-item {
+      background: #f8f9fa;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+/* 追加：関連科目タブ専用の装飾 */
+.subjects-section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin: 30px 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* 学内科目のリスト装飾 */
+.keio-subjects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.keio-subject-item {
+  background: #fdfdfd;
+  border: 1px solid #eef2f7;
+  border-left: 6px solid #cbd5e0; /* デフォルトの線 */
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.2s ease;
+}
+.keio-subject-item:hover {
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transform: translateX(5px);
+}
+.category-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.instructor-meta {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+/* パネル内のヘッダーを横並びにする */
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.card-header-flex h3 {
+  margin: 0 !important; /* 余計なマージンを消去 */
+  font-size: 1.05rem;
+}
+/* タイトル横のボタンを小さめに調整 */
+.btn-inline {
+  padding: 4px 10px !important;
+  font-size: 0.75rem !important;
+  white-space: nowrap;
+  flex-shrink: 0; /* ボタンが潰れないように */
+}
+/* 学内科目用：タグのように見せるスタイル */
+.category-label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #718096;
+  margin-bottom: 4px;
+  display: block;
+}
+/*注意事項 */
+/* 全体のコンテナをグリッドに変更 */
+    .caution-grid {
+        display: grid;
+        /* PCでは2列、スマホでは1列に自動切替 */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        margin: 25px 0;
+    }
+    .caution-card1 {
+        background: #fdfdfd;
+        border: 1px solid #eef2f7;
+        border-left: 6px solid #cbd5e0; /* 基本の線 */
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* 内容とフッターを上下に分ける */
+    }
+    .caution-card {
+        background: #fdfdfd;
+        border: 1px solid #eef2f7;
+        border-left: 6px solid #cbd5e0; /* 基本の線 */
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* 内容とフッターを上下に分ける */
+    }
+    /* 重要項目（一番目など）だけ色を変える */
+    .caution-card.highlight {
+        border-left-color: #4a5568; 
+    }
+    .caution-card1:hover {
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        transform: translateY(-5px); /* 上に少し浮く動きに変更（2列だとこちらが綺麗） */
+    }
+	
+    .caution-card:hover {
+        background: #fff;
+        
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+    .subject-title {
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: #2d3748;
+        line-height: 1.3;
+    }
+    .badge-important {
+        background-color: #e53e3e;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    .card-content {
+        font-size: 0.9rem;
+        color: #4a5568;
+        line-height: 1.6;
+        flex-grow: 1; /* コンテンツが少なくても高さを揃える */
+    }
+    .card-footer {
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #f7fafc;
+        font-size: 0.8rem;
+        color: #718096;
+    }
+    .card-footer a {
+        color: #3182ce;
+        text-decoration: none;
+        font-weight: bold;
+    }
+	
+/* 各パネルのカラーバリエーション */
+.border-brown {
+    border-left: 6px solid #4B2C20 !important; /* kogetya */
+}
+.border-red {
+    border-left: 6px solid #e53e3e !important; /* 赤 */
+}
+.border-green {
+    border-left: 6px solid #38a169 !important; /* 緑 */
+}
+.border-blue {
+    border-left: 6px solid #3182ce !important; /* 青 */
+}
+.border-orange {
+    border-left: 6px solid #ed8936 !important; /* オレンジ */
+}
+/* ホバー時に枠線の色を少し濃くする演出（任意） */
+.border1-red:hover { border-color: #c53030; }
+/* .border-green:hover { border-color: #2f855a; }
+.border-blue:hover { border-color: #2b6cb0; }
+.border-orange:hover { border-color: #c05621; } 
+*/
+/* ヘッダー内の並びを調整 */
+.card-header {
+    display: flex;
+    align-items: center; /* アイコンと文字を中央に揃える */
+    margin-bottom: 12px;
+}
+	
+	
+	
+	
+/*関連科目  */
+/* 子タブ専用スタイル */
+.sub-tab-menu {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.sub-btn {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #64748b;
+  font-weight: bold;
+}
+.sub-btn.active {
+  color: #3182ce;
+  border-bottom: 2px solid #3182ce;
+  margin-bottom: -2px;
+}
+.sub-tab-content { display: none; }
+.sub-tab-content.active { display: block; }
 </style>
+<script>
+function openSubTab(evt, subName) {
+  // すべての子タブを非表示に
+  const contents = document.getElementsByClassName("sub-tab-content");
+  for (let i = 0; i < contents.length; i++) {
+    contents[i].style.display = "none";
+  }
+  // すべてのボタンからactiveを外す
+  const tabs = document.getElementsByClassName("sub-btn");
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+  // 指定されたタブを表示
+  document.getElementById(subName).style.display = "block";
+  evt.currentTarget.classList.add("active");
+}
+</script>
 </head>
 <body>
+    <div class="gnav-header">
+        <span class="lang-en"><h1 class="gnav-title">Akitaka Yamada's Website</h1></span>
+        <span class="lang-ja"><p class="gnav-title">山田彬尭のウェブサイトへようこそ！</p></span>
+        <div class="gnav-nav">
+            <a href="https://keiosfc-aki2025.github.io/Seminar/home.html"><span class="lang-ja">ホーム</span><span class="lang-en">HOME</span></a>
+            <a href="https://ayamada.sfc.keio.ac.jp/publications"><span class="lang-ja">研究業績</span><span class="lang-en">PUBLICATIONS</span></a>
+            <a href="https://ayamada.sfc.keio.ac.jp/cv">CV</a>
+            <div class="gnav-dropdown">
+                <a href="https://ayamada.sfc.keio.ac.jp/%E8%A4%87%E8%A3%BD-issues-in-theoretical-linguistics-1"><span class="lang-ja">授業</span><span class="lang-en">TEACHING</span></a>
+                <div class="gnav-dropdown-content">
+                    <a href="https://keiosfc-aki2025.github.io/morphology/schedule.html"><span class="lang-ja">音声学・音韻論・形態論<br>（Project Eng C）</span> <span class="lang-en">Phonetics, Phonology, and Morphology (GIGA)</span></a>
+                    <a href="https://keiosfc-aki2025.github.io/syntax/schedule.html"><span class="lang-ja">統語論</span><span class="lang-en">Syntax (GIGA)</span></a>
+                    <a href="https://keiosfc-aki2025.github.io/semantics-and-pragmatics/schedule.html"><span class="lang-ja">意味論・語用論<br>（学部・大学院併設）</span> <span class="lang-en">Semantics and Pragmatics</span></a>
+                </div>
+            </div>
+            <div class="gnav-dropdown">
+                <a href="https://keiosfc-aki2025.github.io/Seminar/SeminarProfile.html"><span class="lang-ja">研究会（ゼミ）</span><span class="lang-en">SEMINARS</span></a>
+                <div class="gnav-dropdown-content">
+                    <a href="https://keiosfc-aki2025.github.io/Seminar-B-Practice-in-Theoretical-Linguistics/TeamProfile.html"><span class="lang-ja">理論言語学実践</span><span class="lang-en">Practice in Theoretical Linguistics</span></a>
+                    <a href="https://keiosfc-aki2025.github.io/Seminar-B-Language-DH-FW/schedule.html"><span class="lang-ja">言語×DH×FW</span><span class="lang-en">Language, DH, and FW</span></a>
+                </div>
+            </div>
+            <div class="gnav-dropdown">
+                <a><span class="lang-ja">コーパス分析</span><span class="lang-en">Corpus Tools</span></a>
+                <div class="gnav-dropdown-content">
+                    <a href="http://keiosfc-aki2025.github.io/KeioSFC/keioSFC.html">KeioSFC</a>
+                    <a href="https://keiosfc-aki2025.github.io/KeioSFC/xmleditor.html">Keio XMLeditor</a>
+                </div>
+            </div>
+            <a href="https://ayamada.sfc.keio.ac.jp/contact"><span class="lang-ja">コンタクト</span><span class="lang-en">CONTACT</span></a>
+            <button id="lang-btn" class="lang-toggle">English</button>
+        </div>
+    </div>
+	
     <header>
       <div class="header-content">
         <div class="course-header">
-            <h1 class="title">Introduction to Theoretical Linguistics (Syntax)</h1>
-            <p class="subtitle">Visualizing the structure of language</p>
+            <h1 class="title">理論言語学（入門）統語論</h1>
+            <p class="subtitle">（見えない構造を可視化する）</p>
             <div class="details">
-                Fall 2025<br>
-                Friday, the 3rd period
+                2026年秋学期（Fall 2026）<br>
+                金曜日3限（Thursday, the 3rd period, tentatively）
             </div>
-            <h2 class="short-title">Introduction to Syntax</h2>
         </div>
-        <p class="lead">
-          This course is one of the foundational lectures in contemporary theoretical linguistics. It focuses particularly on the formal aspects of linguistic expressions, introducing theoretical tools necessary for <b>analyzing the hierarchical structure of (words and) sentences</b>. As outlined in the schedule below, the course offers a comprehensive treatment ranging from the internal structure of words to larger syntactic domains such as verb phrases, noun phrases, and full sentences.
-          </p>
-      </div>
+  
     </header>
+<div class="tabs-container">
+ <ul class="tab-menu">
+  <li><button onclick="openTab(event, 'summary')">概要</button></li>
+  <li><button onclick="openTab(event, 'caution-grid')">履修条件</button></li>
+  <li><button onclick="openTab(event, 'study')">予習</button></li>
+  <li><button onclick="openTab(event, 'grades')">成績</button></li>
+  <li><button onclick="openTab(event, 'firstClass')">ガイダンス</button></li>
+  <li><button class="active" onclick="openTab(event, 'schedule')">日程</button></li>
+  <li><button onclick="openTab(event, 'news')">お知らせ</button></li>
+  <li><button onclick="openTab(event, 'subjects')">関連科目</button></li>
+</ul>
+<div id="summary" class="tab-content">
+  <div class="summary-grid">
+    <div class="summary-card" style="border-top-color: #3182ce;">
+      <h3>📚 【内容】 統語論を日本語を題材に学ぶ</h3>
+      <p>
+        理論言語学における統語論の初級から基礎を、日本語を題材に学びます。有名なトピックや基本的なデータ分析のやり方を学び、受講者が基本的な言語構造分析を自ら行えるようになることを目指します。
+      </p>
+    </div>
+    <div class="summary-card" style="border-top-color: #38a169;">
+      <h3>🎯 【目的】 初級～中級の議論に触れる</h3>
+      <p>
+        残念ながらこの授業だけで最先端の論文を読めるようにはなりません。上級の授業は三田などで開講されているので、この授業はその手前の初級から中級までをカバーすることを目指します。
+      </p>
+    </div>
+    <div class="summary-card" style="border-top-color: #ed8936;">
+      <h3>🔄 【方法】 反転授業</h3>
+      <p>予習でインプット、対面で演習を行う反転授業スタイルです。</p>
+      <div class="method-flow">
+        <span class="flow-item">📹 教科書・予習ビデオ・宿題</span> ▶ <span class="flow-item">🏫 発展的な内容の講義</span>
+      </div>
+    </div>
+    <div class="summary-card" style="border-top-color: #718096;">
+      <h3>👤 【担当教員】 山田 彬尭</h3>
+      <p><b>Akitaka Yamada (he/him)</b></p>
+      <div class="instructor-info">
+        慶應義塾大学 環境情報学部（兼）政策・メディア研究科 所属<br>
+        🌐 <a href="https://keiosfc-aki2025.github.io/Seminar/home.html" target="_blank">教員ウェブサイト</a>
+      </div>
+  </div>
+</div>
+</div>
+<div id="grades" class="tab-content">
+    
+		
+    <div class="column-header">■ 成績評価・単位修得の基準</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>評価項目</th>
+          <th>内容</th>
+          <th class="center">配分比率</th>
+          <th class="center">不可条件</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>宿題</th>
+          <td>授業内外の課題（平常点）</td>
+          <td class="val center red">30%</td>
+          <td class="condition red">未提出率 25%以上</td>
+        </tr>
+        <tr>
+          <th>中間テスト</th>
+          <td>学期中盤に実施する筆記試験</td>
+          <td class="val center red">25%</td>
+          <td class="condition red">未受験</td>
+        </tr>
+        <tr>
+          <th>期末テスト</th>
+          <td>試験期間に実施する筆記試験</td>
+          <td class="val center red">45%</td>
+          <td class="condition red">未受験</td>
+        </tr>
+      </tbody>
+      
+    </table>
+    <div class="deadline-footer">
+      <strong>中間テスト（筆記試験）予定日：</strong> 11月12日（金）13:00<br>
+      <strong>期末テスト（予定）：</strong> テスト期間（TBA）<br>
+    </div>
+	※中間テストの日は、進度に応じて（前）後の授業にずれることがあります。履修にあたって、予定が入っていないことを確認してください。
+ 
+ 
+</div>
+</div>
+<div id="study" class="tab-content">
+  <div class="study">
+    <span class="main-text">この授業の予習は</span><br>
+   （たぶん、それなりに） 「<span class="alert-text">重たい</span>」です<br>
+   <br>
+   （でも、学期を終えるとその分、大きな<span class = "highlight"><b>充足感</b></span>が待っている（はず）！）
+  </div>
+  <div class="study-grid">
+    <div class="study-item">
+      <h3>📺 （１）講義ビデオ（毎週）</h3>
+      <p>予習用ビデオは毎週<b>1時間〜1時間半</b>。内容を正確に把握するためのインプット作業です。</p>
+    </div>
+    <div class="study-item">
+      <h3>✍️ （２）提出課題（毎週）</h3>
+      <p>ビデオ内容の理解度を確認するためのアウトプット。知識を定着させる重要なステップです。</p>
+    </div>
+  </div>
+  <div class="study-notice">
+    <div class="icon">⏰</div>
+    <div class="text">
+      ノート作成や休憩時間を考慮すると、確実に<br>
+      <b>毎週2時間ほど</b>の学習時間を確保することが不可欠です。
+    </div>
+  </div>
+   
+    
+</div>
+<div id="news" class="tab-content">
+  <strong>休講情報</strong>：なし<br>
+</div>
+  
+  
+  
+   
+  
+  
+<div id="firstClass" class="tab-content">
+  <div class="study-notice">
+    <div class="icon">💡</div>
+    <div class="text">
+      <span class="badge-important">重要</span> <b><span class="highlight">オンライン ガイダンス＆選抜課題</span></b><br>履修登録までに、①下記の「<span class="highlight">ビデオ</span>」を視聴し、②「<span class="highlight">選抜課題</span>」を提出してください。</b>
+    </div>
+  </div>
+  <span class="section-title">■ ビデオ：</span>
+  <div class="video-grid">
+    <a href="https://youtu.be/7M3Z0sKUxaA" class="button">1.1 はじめに（16:47)</a>
+    <a href="https://youtu.be/9oEq_prmo_c" class="button">1.2 縦の具体例（13:50）</a>
+    <a href="https://youtu.be/tBcHnV8wVDg" class="button">1.2 横の具体例（14:34）</a>
+    <a href="https://youtu.be/i-0-E3S8HSM" class="button">1.3 縦のむずかしさ（8:05）</a>
+    <a href="https://youtu.be/wkRZUBeaKUE" class="button">1.3 横のむずかしさ（27:22）</a>
+  </div>
+  <p class="note-text">※このようなビデオが毎週あるので（長さは1時間半くらいです）、そのようなスタイルが自分に合うかもチェックしてください。</p>
+  <div class="resources-wrapper">
+  <div class="resource-box">
+    <span class="section-title">■ 資料：</span>
+    <div class="file-area">
+      <a href="https://keiosfc-aki2025.github.io/semantics-and-pragmatics/Chapter-1-Introduction.pdf" class="button pdf-button">配布プリント (PDF)</a>
+    </div>
+  </div>
+  <div class="resource-box">
+    <span class="section-title">■ 選抜課題：慶應のシラバスに記載の提出先に課題をアップロードしてください</span>
+    <div class="file-area flex-row">
+      <a href="https://keiosfc-aki2025.github.io/semantics-and-pragmatics/選抜課題.docx" class="button docx-button">選抜課題 (docx)</a>
+      <a href="https://keiosfc-aki2025.github.io/semantics-and-pragmatics/選抜課題.pdf" class="button pdf-button">選抜課題 (pdf)</a>
+    </div>
+  </div>
+</div>
+</div>
+<div id="caution-grid" class="tab-content">
+  <div class="summary-grid">
+  <div class="caution-grid">
+    <div class="caution-card1 border-red">
+      <div class="card-header">
+        <div class="card-icon">🚫</div>
+        <span class="subject-title"><span class="badge-important">重要</span><span> </span>         ガイダンス動画＆選抜課題</span>
+      </div>
+      <div class="card-content">
+        履修登録前に「<a href="https://keiosfc-aki2025.github.io/syntax/schedule.html" class="link-small">ガイダンス動画</a> 」を視聴し、マッチングを測った後、選抜課題を提出。
+      </div>
+    </div>
+    <div class="caution-card border-green">
+      <div class="card-header">
+        <div class="card-icon">⏳</div>
+        <span class="subject-title">学習時間</span>
+      </div>
+      <div class="card-content">
+        反転授業形式のため予習が前提です。毎週、十分な予習・復習時間を確保してください。
+      </div>
+    </div>
+    <div class="caution-card border-blue">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <span class="subject-title">継続的な出席</span>
+      </div>
+      <div class="card-content">
+        出欠は取りませんが、内容の積み上げが強いため、欠席すると復帰が難しくなります。
+      </div>
+    </div>
+    <div class="caution-card border-orange">
+      <div class="card-header">
+        <div class="card-icon">🔢</div>
+        <span class="subject-title">論理的な思考力</span>
+      </div>
+      <div class="card-content">
+        暗記主体の授業ではありません。
+		与えられたデータをもとに、仮説の優劣を論理的に比較する能力が求められます。
+		
+      </div>
+    </div>
+</div>
+  </div>
+</div>
+<div id="subjects" class="tab-content">
+    <ul class="sub-tab-menu">
+      <li><button class="sub-btn active" onclick="openSubTab(event, 'sub-instructor')">担当教員の授業一覧</button></li>
+      <li><button class="sub-btn" onclick="openSubTab(event, 'sub-keio-summary')">慶應塾内での関連科目（概要）</button></li>
+      <li><button class="sub-btn" onclick="openSubTab(event, 'sub-table-list')">慶應塾内での関連科目（リスト2025）</button></li>
+    </ul>
+	
+	<div id="sub-instructor" class="sub-tab-content active">
+    <div class="caution-grid">
+	
+    
+    <div class="caution-card border-green">
+      <div class="card-header">
+			<div class="card-icon">🗣️</div>
+				<span class="subject-title" style="font-size: normal ;">音声学・音韻論・形態論　<a href="https://keiosfc-aki2025.github.io/syntax/schedule.html" class="button btn-inline">🚀</a></span>
+			</div>
+			<p style="text-align:right;"　> <span style="font-size: small ;">☆☆☆★★</span></p>
+		<div class="card-content">
+			<b><span class="highlight">単語レベル</span></b>における階層構造とルールについて、音への知識を重視しつつ学びます。ことばの意味というよりは言葉の形に焦点を当てています。GIGA/Project English Cとして開講され、英語で行われます。
+		</div>
+    </div>
+	
+	<div class="caution-card border-brown">
+      <div class="card-header">
+			<div class="card-icon">💭</div>
+				<span class="subject-title">意味論/語用論　<a href="https://keiosfc-aki2025.github.io/semantics-and-pragmatics/schedule.html" class="button btn-inline">🚀</a></span>
+			</div>
+		<div class="card-content">
+					<p style="text-align:right;"　> <span style="font-size: small ;">☆★★★★</span></p>
+			<b><span class="highlight">単語・文・文脈</span></b>におけることば意味の分析の仕方を学びます。大学院併設の先端研究の授業ですので、難しい内容を一部含みます。日本語で行われます。
+		</div>
+    </div>
+	
+	<div class="caution-card border-green">
+      <div class="card-header">
+			<div class="card-icon">📑</div>
+				<span class="subject-title" >統語論：日本語分析　<a href="https://keiosfc-aki2025.github.io/syntax/schedule.html" class="button btn-inline">🚀</a></span>
+			</div>
+			<p style="text-align:right;"　> <span style="font-size: small ;">☆★★★★</span></p>
+		<div class="card-content">
+			<b><span class="highlight">文レベル</span></b>における階層構造とルールを、<span class="highlight">日本語</span>を題材に講義します。
+		</div>
+    </div>
+	
+    <div class="caution-card border-red">
+      <div class="card-header">
+			<div class="card-icon">🏠</div>
+				<span class="subject-title">統語論：英語分析　<a href="https://keiosfc-aki2025.github.io/syntax/schedule.html" class="button btn-inline">🚀</a></span>
+			</div>
+			<p style="text-align:right;"　> <span style="font-size: small ;">☆★★★★</span></p>
+		<div class="card-content">
+			<b><span class="highlight">文レベル</span></b>における階層構造とルールを、<span class="highlight">日本語以外（英語や世界の様々な言語）</span>を題材に講義します。GIGAとして開講され、英語で行われます。
+		</div>
+    </div>
+	
+	
+    
+	
+	
+    <div class="caution-card border-blue">
+      <div class="card-header">
+			<div class="card-icon">🧪️</div>
+				<span class="subject-title">研究会 B1：理論言語学実践　<a href="https://keiosfc-aki2025.github.io/Seminar/SeminarProfile.html" class="button btn-inline">🚀</a></div>
+				<p style="text-align:right;"　> <span style="font-size: small ;">★★★★★</span></p>
+		<div class="card-content">
+			理論言語学（入門）で習った知識をもとに、<b><span class="highlight">先行研究</span></b>を読み、より深い言語分析を行います。
+		</div>
+    </div>
+    <div class="caution-card border-orange">
+      <div class="card-header">
+			<div class="card-icon">🌍️</div>
+				<span class="subject-title">研究会 B2：言語×DH×FW　<a href="https://ayamada.sfc.keio.ac.jp/ldf" class="button btn-inline">🚀</a></div>
+				
+				<p style="text-align:right;"　> <span style="font-size: small ;">★★★★★</span></p>
+		<div class="card-content">言語実験やコーパスなど、生の<b><span class="highlight">データ</span></b>を採取し、<b><span class="highlight">定量的分析</span></b>を行う言語研究の方法論に焦点を当てた研究会です。
+		</div>
+		
+    </div>
+	
+    </div>
+	</div>
+    <div id="sub-keio-summary" class="sub-tab-content">
+    <div class="subjects-section-title"><span>🏫</span> 慶應義塾内での関連科目概要</div>
+	※ほかにも気が付いた人がいたら教えてください！（敬称略で失礼いたします）
+    <div class="summary-grid">
+      <div class="summary-card" style="border-top-color: #3182ce; background: #f8fafc;">
+        <span class="category-label">認知意味論</span>
+        <h3>英語学 / 言語認識論 他</h3>
+        <p style="font-size: 0.8rem; color: #718096; margin-top: 8px;">👤 多々良, 八木橋, 中村, 西村, 小原 他</p>
+      </div>
+      <div class="summary-card" style="border-top-color: #38a169; background: #f8fafc;">
+        <span class="category-label">形式意味論</span>
+        <h3>言語学概論Ⅱ / 語彙意味論</h3>
+        <p style="font-size: 0.8rem; color: #718096; margin-top: 8px;">👤 星, 島田, 小野 (三田・対面)</p>
+      </div>
+      <div class="summary-card" style="border-top-color: #805ad5; background: #f8fafc;">
+        <span class="category-label">論理学</span>
+        <h3>計算論理学 / 論理学Ⅰ・Ⅱ</h3>
+        <p style="font-size: 0.8rem; color: #718096; margin-top: 8px;">👤 中村, 田中, 佐々木, 高橋, 山崎 他</p>
+      </div>
+      <div class="summary-card" style="border-top-color: #e53e3e; background: #f8fafc;">
+        <span class="category-label">論理学／形式意味論</span>
+        <h3>現代論理学の諸問題 他</h3>
+        <p style="font-size: 0.8rem; color: #718096; margin-top: 8px;">👤 峯島, 秋吉 他 (三田・対面)</p>
+      </div>
+		</div>		
+	</div>
+	
+<style>
+/* =========================================================
+   日程が過ぎた場合（hw-past）の完全グレースケール化
+========================================================= */
+/* 1. 期限切れセル内の「すべてのテキスト」を強制的にグレーにする */
+td.hw-past, 
+td.hw-past * {
+  color: #a9a9a9 !important;
+}
+/* 2. 期限切れセル内の「すべてのボタン」を強制的に薄グレーにする */
+td.hw-past a,
+td.hw-past a.button,
+td.hw-past a.btn-video,
+td.hw-past a.handout-link,
+td.hw-past a.docx-button,
+td.hw-past a.pdf-button {
+  background-color: #f5f5f5 !important;  /* ボタン背景をうすグレー */
+  color: #a9a9a9 !important;             /* ボタンの文字を薄グレー */
+  border: 1px solid #dcdcdc !important;  /* 枠線も薄グレー */
+  box-shadow: none !important;           /* 立体感があれば消す */
+}
+/* 3. マウスを乗せた時（ホバー）の変化も抑える */
+td.hw-past a:hover,
+td.hw-past a.button:hover,
+td.hw-past a.btn-video:hover {
+  background-color: #eeeeee !important;
+}
+/* Videoボタン用のスタイル（うすオレンジ〜茶色） */
+.btn-video {
+  background-color: #ffe4e5 !important; /* うすオレンジ */
+  color: #5a3a22 !important;            /* 茶色のテキスト */
+  border: 1px solid #d99c71 !important; /* 枠線も少し濃いオレンジ茶色に */
+  margin-right: 5px;                    /* Handoutボタンとの隙間 */
+}
+/* ホバー時の色 */
+.btn-video:hover {
+  background-color: #ffe4b5; /* モカシン色に近い少し明るいオレンジ */
+}
+/* 非アクティブ（公開前）用のスタイル */
+.btn-video.disabled {
+  background-color: #f9f9f9;
+  color: #ccc;
+  border-color: #eee;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+  .btn{display:inline-block;
+	padding:10px 20px;
+	background:#f1f5f9;
+	border:1px solid #cbd5e1;
+	border-radius:5px;
+	cursor:pointer;
+	font-weight:700;
+	color:#475569
+　　}
+  .btn:hover{background:#e2e8f0}
+  .t{width:100%;border-collapse:collapse;font:13px sans-serif;text-align:center;font-weight:700;display:none}
+  .t td{border:1px solid #ddd;padding:6px;color:#333}
+  .c1{background:#feb2b2}
+  .c2{background:#d6bcfa}
+  .c3{background:#bee3f8}
+  .c4{background:#c6f6d5}
+  .c5{background:#b2f5ea}
+</style>
+<div id="sub-table-list" class="sub-tab-content">
+    <div class="subjects-section-title"><span>📅</span> 2025年度 開講科目一覧</div>
+    
+    <p style="margin-bottom: 10px;">敬称略で失礼します。他にも気が付かれた方がいたら教えてください。：</p>
+    
+    <table class="t" style="display:table;"> 
+        <tr class="h"><th>対象</th><th>科目</th><th>担当者（敬称略）</th></tr>
+	<tr><td rowspan="7" class="c3">認知意味論</td><td>英語学IX/Ⅳ</td><td>多々良,八木橋</td></tr>
+	<tr><td>英語学Ⅷ/ⅩⅣ</td><td>中村</td></tr>
+	<tr><td>英語学特講ⅠＣ/ⅡＣ</td><td>西村</td></tr>
+	<tr><td>英語学特講ⅠＤ</td><td>小原</td></tr>
+	<tr><td>言語学Ⅰ/Ⅲ/Ⅳ</td><td>平沢,古賀</td></tr>
+	<tr><td>言語認識論</td><td>小原,斎藤</td></tr>
+	<tr><td>自然言語処理特論</td><td>小原,斎藤</td></tr>
+	<tr><td class="c5">語彙意味論</td><td>言語学特殊Ⅹ</td><td>小野</td></tr>
+	<tr><td rowspan="3" class="c4">形式意味論</td><td>言語学概論Ⅱ</td><td>星</td></tr>
+	<tr><td>言語学特殊Ⅶ</td><td>島田</td></tr>
+	<tr><td>言語学特殊ⅩⅧ</td><td>タンクレディ</td></tr>
+	<tr><td rowspan="5" class="c2">論理学</td><td>計算論理学</td><td>中村</td></tr>
+	<tr><td>哲学Ⅰ</td><td>田中</td></tr><tr><td>哲学倫理学特殊ⅠＧ/ⅡＧ</td><td>菅崎</td></tr>
+	<tr><td>論理学I, II</td><td>佐々木,高橋,山崎,小関</td></tr>
+	<tr><td>論理学入門I, II</td><td>峯島</td></tr>
+	<tr><td rowspan="3" class="c1">論理学／形式意味論</td><td>現代論理学Ⅰ/Ⅱ</td><td>峯島,秋吉</td></tr>
+	<tr><td>哲学特殊講義Ⅲ/Ⅳ</td><td>峯島</td></tr>
+	<tr><td>哲学倫理学特殊I, II</td><td>峯島,秋吉</td></tr>
+   </table>
+		
+  </div>
+  
+  </div>
+<div id="schedule" class="tab-content active">
   <div class="wrap">
+	スケジュールは暫定版で、今後変更されることがありうることに注意してください。
     <div class="card">
 		<div class="controls">
-			<div class="seg" role="tablist" aria-label="view mode">
-                <button id="btnFull" role="tab" aria-selected="false">Full Schedule</button>
-				<button id="btnSession" class="active" role="tab" aria-selected="true">By Session</button>
 			</div>
             <select id="sessionSelect" aria-label="Select session" style="display: none;"></select>
-			<input type="search" id="searchBox" placeholder="Search class / reading / homework">
+			<input type="search" id="searchBox" placeholder="検索">
 		</div>
 		<div class="card" style="margin-top:14px;padding:10px;color:#1e40af;font-weight:600" id="generalComment">
-			<p>Class on November 7 is cancelled.</p>
+			
 		</div>
         <template id="tableTemplate">
     <table>
@@ -461,31 +1605,31 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
         </colgroup>
         <thead>
             <tr>
-                <th class="col1"></th>
-                <th class="col-date">Date</th>
-                <th class="col-chapter">Chapter</th> 
-				<th class="col2">Class</th>
-                <th class="col3">Docs</th>
+                <th class="col1"><span class="lang-ja">授業回</span><span class="lang-en">Class</span></th>
+                <th class="col-date"><span class="lang-ja">日付</span><span class="lang-en">date</span></th>
+                <th class="col-chapter"><span class="lang-ja">章</span><span class="lang-en">Chapter</span></th> 
+				<th class="col2"><span class="lang-ja">授業内講義</span><span class="lang-en">Lecture</span></th>
+                <th class="col3"><span class="lang-ja">課題</span><span class="lang-en">HW</span></th>
             </tr>
         </thead>
     <tbody></tbody>
     </table>
 </template>
-        <div id="fullScheduleContainer" class="tablewrap" style="display: none;">
+        <div id="fullScheduleContainer" class="tablewrap">
              </div>
-        <div id="sessionOverviewContainer">
+        <div id="sessionOverviewContainer" style="display: none;">
             <section class="session-panel muted-panel" id="panelLast">
-                <h2>Last Class</h2>
+                <h2>前回</h2>
                 <div class="tablewrap">
                     </div>
             </section>
             <section class="session-panel" id="panelNext">
-                <h2>Next Class</h2>
+                <h2>次回</h2>
                 <div class="tablewrap">
                      </div>
             </section>
             <section class="session-panel muted-panel" id="panelAfterNext">
-                <h2>Class After Next</h2>
+                <h2>次々回</h2>
                 <div class="tablewrap">
                     </div>
             </section>
@@ -493,16 +1637,27 @@ footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
         </div>
   
    <p></p>
-   <div class="card">
-      <h3>Quick Tips</h3>
-      <ul style="margin-top:8px;color:var(--muted)">
-        <li>Select "By Session" and choose session from dropdown to view one session only.</li>
-        <li>Select "Full Schedule" to see all sessions.</li>
-        <li>Videos appear as buttons that open the link in a new tab.</li>
-      </ul>
-    </div>
   </div>
   <script>
+  // =====================
+// タブの切り替え
+// =====================
+  function openTab(evt, tabName) {
+    var i, tabContent, tabButtons;
+    // すべてのコンテンツを非表示にする
+    tabContent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabContent.length; i++) {
+      tabContent[i].classList.remove("active");
+    }
+    // すべてのボタンからactiveクラスを消す
+    tabButtons = document.querySelectorAll(".tab-menu button");
+    for (i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].classList.remove("active");
+    }
+    // 指定されたタブを表示し、ボタンをアクティブにする
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+  }
 // =====================
 // Embedded scheduleData
 // =====================
@@ -511,289 +1666,351 @@ const scheduleData =
   {
     "session": "Part",
     "chapter": "",
-    "class": "Introduction",
+    "class": "<b><span class=\"lang-ja\"> 日本語の基本構造 <\/span><span class=\"lang-en\"> Preliminaries <\/span><\/b>\n ",
+    "ClassEn": "Preliminaries",
     "format": "",
     "date": "",
+    "slides": "",
     "video": "",
-    "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
+    "deadlineHW": "",
     "date2": ""
   },
   {
     "session": "0",
-    "chapter": "Preliminaries<br><br>Watch before 10/02",
-    "class": "",
-    "format": "on-demand",
+    "chapter": "Chapter 1",
+    "class": "<b><span class=\"lang-ja\"> ガイダンス <\/span><span class=\"lang-en\"> Guidance <\/span><\/b>\n スライド1<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>[after 11/15/2025], スライド2<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>[after 06/18/2026]",
+    "ClassEn": "Guidance",
+    "format": "<span class=\"lang-ja\">（オンデマンド）<\/span><span class=\"lang-en\">on-demand<\/span>",
     "date": "",
+    "slides": "スライド1<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>[after 11/15/2025], スライド2<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>[after 06/18/2026]",
     "video": "1 Introduction to linguistics (34:39)<https://www.youtube.com/watch?v=cHDqpiJoqpk>, 2 Prescriptivism vs descriptivism (17:48)<https://www.youtube.com/watch?v=mO4WQB1BIq0>",
-    "deadlineHW": "2025/10/2",
     "handout": "",
-    "deadlineClass": "2025/10/2",
+    "deadlineClass": "2026/09/30[23:59:59]",
+    "deadlineHW": "2026/10/1[13:00:00]",
+    "date2": ""
+  },
+  {
+    "session": "Part",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\"> 第一部　レキシコン <\/span><span class=\"lang-en\"> Part I Lexicon <\/span><\/b>\n ",
+    "ClassEn": "Part I Lexicon",
+    "format": "",
+    "date": "",
+    "slides": "",
+    "video": "",
+    "handout": "",
+    "deadlineClass": "",
+    "deadlineHW": "",
     "date2": ""
   },
   {
     "session": "1",
-    "chapter": "Chapter 1",
-    "class": "What is syntax?",
-    "format": "face-to-face",
-    "date": "2025/10/3",
-    "video": "1 Parts of Speech(20:32)<https://www.youtube.com/watch?v=EzlNj8NNX2A&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm>,  2 Functional Parts of Speech (13:17)<https://www.youtube.com/watch?v=sk5iO_uFgKw&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=2>, 3 Subcategories (22:53)<https://www.youtube.com/watch?v=0JvcF6SrDFQ&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=3>",
-    "deadlineHW": "2025/10/9",
-    "handout": "Slides<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6e808762f50a478abde6a2945f193ee6.pdf>",
-    "deadlineClass": "2025/10/3",
-    "date2": "2025/10/3"
-  },
-  {
-    "session": "Part",
-    "chapter": "",
-    "class": "Framework 1: PS-rules",
-    "format": "",
-    "date": "",
-    "video": "",
-    "deadlineHW": "",
-    "handout": "",
-    "deadlineClass": "",
-    "date2": ""
+    "chapter": "Chapter 2",
+    "class": "<b><span class=\"lang-ja\"> 品詞 <\/span><span class=\"lang-en\"> Parts of speech <\/span><\/b>\n 2-1 Parts of Speech(20:32)<https://www.youtube.com/watch?v=EzlNj8NNX2A&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm>,  \n2-2 Functional Parts of Speech (13:17)<https://www.youtube.com/watch?v=sk5iO_uFgKw&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=2>, \n2-3 Subcategories (22:53)<https://www.youtube.com/watch?v=0JvcF6SrDFQ&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=3>",
+    "ClassEn": "Parts of speech",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/10/1",
+    "slides": "2-1 Parts of Speech(20:32)<https://www.youtube.com/watch?v=EzlNj8NNX2A&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm>,  \n2-2 Functional Parts of Speech (13:17)<https://www.youtube.com/watch?v=sk5iO_uFgKw&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=2>, \n2-3 Subcategories (22:53)<https://www.youtube.com/watch?v=0JvcF6SrDFQ&list=PL1ymN_px3GFQZfoDLgH9AK1CoKuWq2hkm&index=3>",
+    "video": "3-1 Structure (9:51)<https://www.youtube.com/watch?v=JoUk6RsUgCs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=1>, \n3-2 Constituency tests (17:47)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>, \n",
+    "handout": "Assignment 1 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c6070fab55144944a2a4c710af1366b0.pdf>, Assignment 1 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ef0f92d5e063453b98fbb834831fe141.docx>, Slides (Class 2)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_00d57b08245c49f5a9d981ee3f163a4c.pdf>,Don't open the following until you are instructed, Exercise 7<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_3ceb587949ba431ea058b6767c79e6d7.pdf>",
+    "deadlineClass": "2026/10/1[13:00:00]",
+    "deadlineHW": "2026/10/7[12:00:00]",
+    "date2": "2026/10/1"
   },
   {
     "session": "2",
-    "chapter": "Chapter 2",
-    "class": "Parts of speech",
-    "format": "face-to-face",
-    "date": "2025/10/10",
-    "video": "1 Structure (9:51)<https://www.youtube.com/watch?v=JoUk6RsUgCs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=1>, 2 Constituency tests (17:47)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>, 3 PS rules [1] (25:14)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>,,  (The following video highly recommended, but optional), 4 *Exercise (20:12)<https://www.youtube.com/watch?v=Svd7AuAcGDs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=11>",
-    "deadlineHW": "2025/10/16",
-    "handout": "Assignment 1 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c6070fab55144944a2a4c710af1366b0.pdf>, Assignment 1 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ef0f92d5e063453b98fbb834831fe141.docx>, Slides (Class 2)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_00d57b08245c49f5a9d981ee3f163a4c.pdf>,Don't open the following until you are instructed, Exercise 7<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_3ceb587949ba431ea058b6767c79e6d7.pdf>",
-    "deadlineClass": "2025/10/10",
-    "date2": "2025/10/10"
+    "chapter": "Chapter 3",
+    "class": "<b><span class=\"lang-ja\"> 構成素 <\/span><span class=\"lang-en\"> Constituency <\/span><\/b>\n 3-3 PS rules [1] (25:14)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>,\n,  (The following video highly recommended, but optional),\n3-4 *Exercise (20:12)<https://www.youtube.com/watch?v=Svd7AuAcGDs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=11>, 3-5 PS rules [2] (26:01)<https://www.youtube.com/watch?v=HzJQMerlzic&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=4>, 3-6 How to draw a tree (17:30)<https://www.youtube.com/watch?v=1bsOQweQMA0&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=5>, 3-7 Ambiguity (10:27)<https://www.youtube.com/watch?v=1sYPVkstAoU&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=6>,  (The following video is highly recommended, but optional),3-8 *Exercise (18:53)<https://www.youtube.com/watch?v=_2hlrVdGGfk&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=12>",
+    "ClassEn": "Constituency",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/10/8",
+    "slides": "3-3 PS rules [1] (25:14)<https://www.youtube.com/watch?v=KlUe3TEeDus&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=2>,\n,  (The following video highly recommended, but optional),\n3-4 *Exercise (20:12)<https://www.youtube.com/watch?v=Svd7AuAcGDs&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=11>, 3-5 PS rules [2] (26:01)<https://www.youtube.com/watch?v=HzJQMerlzic&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=4>, 3-6 How to draw a tree (17:30)<https://www.youtube.com/watch?v=1bsOQweQMA0&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=5>, 3-7 Ambiguity (10:27)<https://www.youtube.com/watch?v=1sYPVkstAoU&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=6>,  (The following video is highly recommended, but optional),3-8 *Exercise (18:53)<https://www.youtube.com/watch?v=_2hlrVdGGfk&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=12>",
+    "video": "A review (10:30) <https://youtu.be/N2nbP7IUBzc>, ",
+    "handout": "Assignment 2 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_06d96766e8624f6bab0d76a67fcfdc33.pdf>, Assignment 2 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8ec2a39e88314c329df62db239970c20.docx>, Slides (Class 3)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e475a64b943f43049ecd76707750b7cd.pdf>",
+    "deadlineClass": "2026/10/8[13:00:00]",
+    "deadlineHW": "2026/10/14[12:00:00]",
+    "date2": "2026/10/8"
   },
   {
     "session": "3",
-    "chapter": "Chapter 3",
-    "class": "Constituency, trees and rules (I): <br>NP, AP, and AdvP",
-    "format": "face-to-face",
-    "date": "2025/10/17",
-    "video": "1 A review (10:30) <https://youtu.be/N2nbP7IUBzc>, 2 PS rules [2] (26:01)<https://www.youtube.com/watch?v=HzJQMerlzic&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=4>, 3 How to draw a tree (17:30)<https://www.youtube.com/watch?v=1bsOQweQMA0&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=5>, 4 Ambiguity (10:27)<https://www.youtube.com/watch?v=1sYPVkstAoU&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=6>,  (The following video is highly recommended, but optional),5 *Exercise (18:53)<https://www.youtube.com/watch?v=_2hlrVdGGfk&list=PL1ymN_px3GFRrK8wjw3duZoly6MejvT2A&index=12>",
-    "deadlineHW": "2025/10/23",
-    "handout": "Assignment 2 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_06d96766e8624f6bab0d76a67fcfdc33.pdf>, Assignment 2 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8ec2a39e88314c329df62db239970c20.docx>, Slides (Class 3)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e475a64b943f43049ecd76707750b7cd.pdf>",
-    "deadlineClass": "2025/10/17",
-    "date2": "2025/10/17"
+    "chapter": "Chapter 6",
+    "class": "<b><span class=\"lang-ja\"> X'理論（基礎） <\/span><span class=\"lang-en\"> X-bar theory (basics) <\/span><\/b>\n 6-1 NPs (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 6-2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 6-3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>",
+    "ClassEn": "X-bar theory (basics)",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/10/15",
+    "slides": "6-1 NPs (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 6-2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 6-3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>",
+    "video": "6-4 Compl/adjunct (25:53) <https://www.youtube.com/watch?v=1avF6TiLnmA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=4>, 6-5 How to draw trees (13:14)<https://www.youtube.com/watch?v=-wpfH32fjdA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=5>, 6-6 X-bar parameters (7:35)<https://www.youtube.com/watch?v=BCW7u8-DyvQ&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=6>",
+    "handout": "",
+    "deadlineClass": "2026/10/15[13:00:00]",
+    "deadlineHW": "2026/10/21[12:00:00]",
+    "date2": "2026/10/15"
   },
   {
     "session": "4",
-    "chapter": "Chapter 3",
-    "class": "Constituency, trees and rules (II):<br>PP, VP, TP, and CP",
-    "format": "face-to-face",
-    "date": "2025/10/24",
-    "video": "There is no new video to watch this week. Instead please work on Ex 1 & 2 in Assignment 3 and come to class prepared with your answers.",
-    "deadlineHW": "2025/10/30",
-    "handout": "Assignment 3 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_dcc5abd9b7e6450e85a9657db7b77e2c.pdf>, Assignment 3 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9bdf812cb806415b912168c175a93bf1.docx>, Slides (Class 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_aafe2884cb6d41a9a706c841ccae8874.pdf>",
-    "deadlineClass": "2025/10/24",
-    "date2": "2025/10/24"
+    "chapter": "Chapter 7",
+    "class": "<b><span class=\"lang-ja\"> X'理論（発展） <\/span><span class=\"lang-en\"> X-bar theory (advanced) <\/span><\/b>\n ",
+    "ClassEn": "X-bar theory (advanced)",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/10/22",
+    "slides": "",
+    "video": "7-1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 7-2 TPs [A] (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, 7-3 TPs [B] (8:40)<https://youtu.be/3Tey2S7GyyY>,  7-4 CPs (6:12)<https://youtu.be/DHvKlFjjaCw>,  After watching the videos complete the following assignment and post it online (Due 13:00 Dec 5 = before the next class starts)., Assignment 7 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f94106db5c06426cace9d40a90169996.docx>, Assignment 7 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_40f4b85a031f4d2dbed3fd5ccb818a62.pdf>",
+    "handout": "Optional extra credit assignment:  you will earn extra points if you solve and submit it (Due 23:59 Nov 21). , Bonus HW (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9f783657cb44431c8e46016cc31ee476.docx>, Bonus HW (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9878d8a6b3054c69acb997ecc5599595.pdf>",
+    "deadlineClass": "2026/10/22[13:00:00]",
+    "deadlineHW": "2026/10/28[12:00:00]",
+    "date2": "2026/10/22"
   },
   {
     "session": "5",
-    "chapter": "Chapter 3",
-    "class": "Constituency, trees and rules (III): <br> Practice day",
-    "format": "face-to-face",
-    "date": "2025/10/31",
-    "video": "1 Structural relations (14:00)<https://youtu.be/-qE1hMlf3oY>, After watching the video, please do the following assignment and submit it online (by midnight Nov 7), Assignment 4(pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e971d6d8e195450d885789cc7d51e3f0.pdf>, Assignment 4 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_4663bc21294f4f45bf084722714245da.docx>",
-    "deadlineHW": "2025/11/6",
+    "chapter": "Chapter 7",
+    "class": "<b><span class=\"lang-ja\"> X'理論（発展） <\/span><span class=\"lang-en\"> X-bar theory (advanced) <\/span><\/b>\n DP, TP, VoiceP",
+    "ClassEn": "X-bar theory (advanced)",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/10/29",
+    "slides": "DP, TP, VoiceP",
+    "video": "1 From Tense to Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 2 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>, 3 Interim summary (11:24)<https://www.youtube.com/watch?v=m-IKsXIEXvE&feature=youtu.be>",
     "handout": "Slides (class 5)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c01d1e7b9f294f24bbd0bcec0cc5c4cf.pdf>",
-    "deadlineClass": "2025/10/31",
-    "date2": "2025/10/31"
+    "deadlineClass": "2026/10/29[13:00:00]",
+    "deadlineHW": "2026/11/4[12:00:00]",
+    "date2": "2026/10/29"
   },
   {
     "session": "6",
-    "chapter": "Chapter 4",
-    "class": "Structural relation",
-    "format": "no class but make sure to submit your HW",
-    "date": "2025/11/7",
-    "video": "1 NPs (12:09)<https://www.youtube.com/watch?v=vlF1TBhlass&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev>, 2 bar-levels (17:13)<https://www.youtube.com/watch?v=pdo6k_RqL3Y&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=2>, 3 X-bar rules (10:14)<https://www.youtube.com/watch?v=bZOnuM7x4tY&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=3>, ",
-    "deadlineHW": "2025/11/13",
+    "chapter": "Chapter 7",
+    "class": "<b><span class=\"lang-ja\"> X'理論（発展）／振り返り <\/span><span class=\"lang-en\"> X-bar theory (advanced)/Review <\/span><\/b>\n T & Voice",
+    "ClassEn": "X-bar theory (advanced)/Review",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/11/5",
+    "slides": "T & Voice",
+    "video": "1 Overgeneration (8:30)<https://www.youtube.com/watch?v=KZHbArrgnrA&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru>,2 Thematic relations (9:31)<https://www.youtube.com/watch?v=17JjiDJ7H40&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=2>, 3 Theta roles (19:42)<https://www.youtube.com/watch?v=Z9JaClNzR-E&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=3>, 4 Expletives and EPP (11:07)<https://www.youtube.com/watch?v=xKJYA9iCQ4g&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=4>, After watching the video\nplease do the following assignment and submit it online (by midnight Dec 19), Assignment 10 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c826cc2a0bb740489bb5063f3c6f06ac.docx>, Assignment 10(pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8824b11d1e254482a098ecf254bd247a.pdf>",
     "handout": "Answer key (Assgn 4)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7dded8a5ed5842f183636c03f0d5148f.pdf>[after 11/08/2025]",
-    "deadlineClass": "2025/11/7",
-    "date2": "2025/11/7"
+    "deadlineClass": "2026/11/5[13:00:00]",
+    "deadlineHW": "2026/11/12[12:00:00]",
+    "date2": "2026/11/5"
   },
   {
     "session": "Part",
     "chapter": "",
-    "class": "Framework 2: X'-syntax",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
     "format": "",
     "date": "",
+    "slides": "",
     "video": "",
-    "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
+    "deadlineHW": "",
     "date2": ""
   },
   {
     "session": "7",
-    "chapter": "Chapter 6",
-    "class": "X-bar syntax (I): <br>NP & VP",
-    "format": "face-to-face",
-    "date": "2025/11/14",
-    "video": "Optional extra credit assignment:  you will earn extra points if you solve and submit it (Due 23:59 Nov 21). , Bonus HW (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9f783657cb44431c8e46016cc31ee476.docx>, Bonus HW (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9878d8a6b3054c69acb997ecc5599595.pdf>",
-    "deadlineHW": "2025/11/27",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\"> 中間テスト <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/11/12",
+    "slides": "",
+    "video": "",
     "handout": "Assignment 5 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_85effd18ccc1431e8275d7a822555a57.pdf>, Assignment 5 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f2d31936e80849728a1e178e9293d76a.docx> , Slides (Class 7)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_bfbc147f673a42349926cee167179805.pdf>[after 11/15/2025]",
-    "deadlineClass": "2025/11/14",
-    "date2": "2025/11/14"
+    "deadlineClass": "2026/11/12[13:00:00]",
+    "deadlineHW": "2026/11/18[12:00:00]",
+    "date2": "2026/11/12"
   },
   {
     "session": "",
     "chapter": "",
-    "class": "No class (Mitasai)",
+    "class": "<b><span class=\"lang-ja\"> <font color = 'red'> ×授業なし<br>三田祭準備<\/font> <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
     "format": "",
-    "date": "2025/11/21",
-    "video": "1 Compl/adjunct (25:53) <https://www.youtube.com/watch?v=1avF6TiLnmA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=4>, 2 How to draw trees (13:14)<https://www.youtube.com/watch?v=-wpfH32fjdA&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=5>, 3 X-bar parameters (7:35)<https://www.youtube.com/watch?v=BCW7u8-DyvQ&list=PL1ymN_px3GFQKseKiqqlBenGiptrUaEev&index=6>",
-    "deadlineHW": "",
+    "date": "2026/11/19",
+    "slides": "",
+    "video": "",
     "handout": "Answer key for Bonus HW<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_7975e806d52a4b449d8a978369c51be3.pdf>[after 11/22/2025]",
-    "deadlineClass": "",
-    "date2": "2025/11/21"
+    "deadlineClass": "2026/11/19[13:00:00]",
+    "deadlineHW": "2026/11/25[12:00:00]",
+    "date2": "2026/11/19"
   },
   {
-    "session": "8",
-    "chapter": "Chapter 6",
-    "class": "X-bar syntax (II)",
-    "format": "face-to-face",
-    "date": "2025/11/28",
-    "video": "1 DPs (12:25)<https://www.youtube.com/watch?v=xf36OW8RNso&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o>, 2 TPs [A] (17:56)<https://www.youtube.com/watch?v=MOtouOMwCQ4&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=2>, 3 TPs [B] (8:40)<https://youtu.be/3Tey2S7GyyY>,  4 CPs (6:12)<https://youtu.be/DHvKlFjjaCw>,  After watching the videos complete the following assignment and post it online (Due 13:00 Dec 5 = before the next class starts)., Assignment 7 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f94106db5c06426cace9d40a90169996.docx>, Assignment 7 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_40f4b85a031f4d2dbed3fd5ccb818a62.pdf>",
-    "deadlineHW": "2025/12/4",
-    "handout": "Assignment 6 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_611aad0fbf034f43aee620c92a86e026.pdf>, Assignment 6 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9b1cf07032c047fcbc97dadf94bd094f.docx>, Answer key (Assgn 6)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f08fdbef452a4ad5b25935c85f2998f5.pdf>[after 11/29/2025]",
-    "deadlineClass": "2025/11/28",
-    "date2": "2025/11/28"
-  },
-  {
-    "session": "9",
-    "chapter": "Chapter 7",
-    "class": "Extending X-bar Theory (I): <br>DP, TP & CP",
-    "format": "face-to-face",
-    "date": "2025/12/5",
-    "video": "1 From Tense to Voice (22:04)<https://www.youtube.com/watch?v=hvVMnlVuo9c&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=4>, 2 From TP to VoiceP (12:36)<https://www.youtube.com/watch?v=Dkfsi6xlxEw&list=PL1ymN_px3GFTiSvLpSkrZ-Iu5Adn2pa0o&index=5>, 3 Interim summary (11:24)<https://www.youtube.com/watch?v=m-IKsXIEXvE&feature=youtu.be>",
-    "deadlineHW": "2025/12/11",
-    "handout": "Answer key for Assgn 7 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_cbf8cd1966a44418a7decd19187e7f55.pdf>[after 13:00 12/05/2025], Assignment 8 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ac5f15fcd9d344c8bfaf43c2f895d24d.docx>, Assignment 8 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8f8b54339f0746c99d9e88309a97b8b1.pdf>, Answer key for Assgn 8<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_81a20de288c44d74a54f3e6ac175b457.pdf>[after 12/06/2025]",
-    "deadlineClass": "2025/12/5",
-    "date2": "2025/12/5"
-  },
-  {
-    "session": "10",
-    "chapter": "Chapter 7",
-    "class": "Extending X-bar Theory (II): <br> PerfP, ProgP & VoiceP",
-    "format": "face-to-face",
-    "date": "2025/12/12",
-    "video": "1 Overgeneration (8:30)<https://www.youtube.com/watch?v=KZHbArrgnrA&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru>,2 Thematic relations (9:31)<https://www.youtube.com/watch?v=17JjiDJ7H40&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=2>, 3 Theta roles (19:42)<https://www.youtube.com/watch?v=Z9JaClNzR-E&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=3>, 4 Expletives and EPP (11:07)<https://www.youtube.com/watch?v=xKJYA9iCQ4g&list=PL1ymN_px3GFR9rsqOu6DJ3W0ri31zdcru&index=4>, After watching the video\nplease do the following assignment and submit it online (by midnight Dec 19), Assignment 10 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_c826cc2a0bb740489bb5063f3c6f06ac.docx>, Assignment 10(pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8824b11d1e254482a098ecf254bd247a.pdf>",
-    "deadlineHW": "2025/12/18",
-    "handout": "Assignment 9 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e37324e7fbfc48889a5a91d5448634b6.pdf>, Assignment 9 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f2d8f5c9b2f34d1da1af1108f82933c1.docx>, Answer key for Assgn 9<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6a85fcce55dc41cb9f687415375d14cf.pdf>[after 12/13/2025]",
-    "deadlineClass": "2025/12/12",
-    "date2": "2025/12/12"
+    "session": "",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\"> <font color = 'red'> ×授業なし<br>補講期間<\/font> <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "",
+    "date": "2026/11/26",
+    "slides": "",
+    "video": "",
+    "handout": "",
+    "deadlineClass": "2026/11/26[13:00:00]",
+    "deadlineHW": "2026/12/[12:00:00]",
+    "date2": "2026/11/26"
   },
   {
     "session": "Part",
     "chapter": "",
-    "class": "Displacement properties",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
     "format": "",
     "date": "",
+    "slides": "",
     "video": "",
-    "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
+    "deadlineHW": "",
     "date2": ""
   },
   {
-    "session": "11",
+    "session": "8",
     "chapter": "Chapter 8",
-    "class": "Theta Theory",
-    "format": "no class but make sure to submit your HW",
-    "date": "2025/12/19",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/12/3",
+    "slides": "",
     "video": "Slides <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_dcad8eead56a49c48c4d49a8edd06587.pdf>, 1 T-to-C (7:25)<https://youtu.be/33IFBgJE6fI>,2 V-to-T (4:10)<https://youtu.be/TiFHlWkUZgI>,  3 Motivation (10:23)<https://youtu.be/2IzeLPyhW6g>, 4 English C system (6:30)<https://youtu.be/e_4DBoIhTcs>, 5 Do-support (English) (4:00) <https://youtu.be/LuHA78eHDA4>, 6 NegP (3:30) <https://youtu.be/c_riprBF5vw>,7 Do-support (Japanese) (6:05)<https://youtu.be/vtCDtM5lIjY>",
-    "deadlineHW": "2025/12/25",
+    "handout": "Assignment 6 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_611aad0fbf034f43aee620c92a86e026.pdf>, Assignment 6 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_9b1cf07032c047fcbc97dadf94bd094f.docx>, Answer key (Assgn 6)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f08fdbef452a4ad5b25935c85f2998f5.pdf>[after 11/29/2025]",
+    "deadlineClass": "2026/12/3[13:00:00]",
+    "deadlineHW": "2026/12/9[12:00:00]",
+    "date2": "2026/12/3"
+  },
+  {
+    "session": "9",
+    "chapter": "2月3日",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/12/10",
+    "slides": "",
+    "video": "1 Example 1 (Ergatives and passives) (10:06)<https://www.youtube.com/watch?v=7K__To6B8ug>, 2 Example 2 (Raising) (19:32) <https://youtu.be/u_X45SEUm3U>, 3 Review: head movement (8:42) <https://youtu.be/3tXqvL8qX54>,  4 Analysis 1: Passives (5:48) <https://youtu.be/3pTYYwg0ZCo>, 5 Analysis 2: Raising (6:00) <https://youtu.be/erZXWH_wgt8>, 6 Gap between our analysis and our intuition (7:06) <https://youtu.be/TADmFgz4Ze0>, 7 Interim summary (3:19) <https://youtu.be/OOBnDfOL2jE>, 8 VoiceP and VISH (13:13) <https://youtu.be/ciGLYtwDvlk>",
+    "handout": "Answer key for Assgn 7 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_cbf8cd1966a44418a7decd19187e7f55.pdf>[after 13:00 12/05/2025], Assignment 8 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_ac5f15fcd9d344c8bfaf43c2f895d24d.docx>, Assignment 8 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8f8b54339f0746c99d9e88309a97b8b1.pdf>, Answer key for Assgn 8<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_81a20de288c44d74a54f3e6ac175b457.pdf>[after 12/06/2025]",
+    "deadlineClass": "2026/12/10[13:00:00]",
+    "deadlineHW": "2026/12/16[12:00:00]",
+    "date2": "2026/12/10"
+  },
+  {
+    "session": "Part",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "",
+    "date": "",
+    "slides": "",
+    "video": "",
+    "handout": "",
+    "deadlineClass": "",
+    "deadlineHW": "",
+    "date2": ""
+  },
+  {
+    "session": "10",
+    "chapter": "3月1日",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/12/17",
+    "slides": "",
+    "video": "",
+    "handout": "Assignment 9 (pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_e37324e7fbfc48889a5a91d5448634b6.pdf>, Assignment 9 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f2d8f5c9b2f34d1da1af1108f82933c1.docx>, Answer key for Assgn 9<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_6a85fcce55dc41cb9f687415375d14cf.pdf>[after 12/13/2025]",
+    "deadlineClass": "2026/12/17[13:00:00]",
+    "deadlineHW": "2026/12/23[12:00:00]",
+    "date2": "2026/12/17"
+  },
+  {
+    "session": "11",
+    "chapter": "3月2日",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2026/12/24",
+    "slides": "",
+    "video": "12-1 Wh-movement (15:07)<https://www.youtube.com/watch?v=rycBQT2S0Fo&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=1>, 12-2 Simple derivation (8:35)<https://www.youtube.com/watch?v=x5hmsYvL0rU&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=2>, 12-3 Subject Wh-questions (13:05)<https://www.youtube.com/watch?v=FhUnTN1vXP8&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=3>",
     "handout": "Answer key for Assgn 10<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_63090de3504940acbb19238069f82323.pdf>[after 12/10/2025]",
-    "deadlineClass": "2025/12/19",
-    "date2": "2025/12/19"
+    "deadlineClass": "2026/12/24[13:00:00]",
+    "deadlineHW": "2026/1/7[12:00:00]",
+    "date2": "2026/12/24"
   },
   {
     "session": "12",
-    "chapter": "Chapter 10",
-    "class": "Head Movement",
-    "format": "face-to-face",
-    "date": "2025/12/26",
-    "video": "1 Example 1: Ergatives and passives (10:05) <https://youtu.be/7K__To6B8ug>, 2 Analysis 1: Raising (9:16)<https://www.youtube.com/watch?v=xUmSd_DcsxA&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v>, 3 Analysis 2: Case Theory (18:29)<https://www.youtube.com/watch?v=1SUpzwS8n44&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=2>, 4 Analysis 3: Passives (16:02)<https://www.youtube.com/watch?v=dhd1WELhyXk&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=3>,  5 Analysis 4: Unaccusatives (11:09) <https://www.youtube.com/watch?v=8qwguC47LTY&list=PL1ymN_px3GFSbR0m-HEdSKQEgmsc2Y8-v&index=4>",
-    "deadlineHW": "2026/1/8",
+    "chapter": "3月3日",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2027/1/7",
+    "slides": "",
+    "video": "12-4 Wh-movement in embedded clauses<https://www.youtube.com/watch?v=nBmVDry01Rc&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=4>, 12-5 Wh-movement in passives and across clause boundaries<https://www.youtube.com/watch?v=Pi5FWdS3f_4&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=5>, 12-6 Traces (9:09)<https://www.youtube.com/watch?v=H1hJIcNiUcw&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=6>",
     "handout": "Assignment 11 (docx)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_0e997486b64c4e17ba12f2a1d987b744.docx>, Assignment 11(pdf)<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_966287b96db24221b0750f8199e09b4d.pdf>, Answer key for Assgn 11<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_a8363bf1809c4e7eb56e57452b0b75ca.pdf>[after 12/26/2025]",
-    "deadlineClass": "2025/12/26",
-    "date2": "2025/12/26"
+    "deadlineClass": "2027/1/7[13:00:00]",
+    "deadlineHW": "2027/1/13[12:00:00]",
+    "date2": "2027/1/7"
+  },
+  {
+    "session": "Part",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "",
+    "date": "",
+    "slides": "",
+    "video": "",
+    "handout": "",
+    "deadlineClass": "",
+    "deadlineHW": "",
+    "date2": ""
   },
   {
     "session": "13",
-    "chapter": "Chapter 11",
-    "class": "DP Movement<br>(A-movement)",
-    "format": "face-to-face",
-    "date": "2026/1/9",
-    "video": "Since DP movement can be quite challenging and there will be a two-week gap between our classes, I have created a review video for you. Please watch it as needed to deepen your understanding., 1 Examples (Raising) (19:32) <https://youtu.be/u_X45SEUm3U>, 2 Analysis (Passives) Head mvt (8:42) <https://youtu.be/3tXqvL8qX54>,  3 Analysis (Passives) A-mvt (5:48) <https://youtu.be/3pTYYwg0ZCo>, 4 Analysis (Raising) (6:00) <https://youtu.be/erZXWH_wgt8>, 5   Gap between our analysis and our intuition (7:06) <https://youtu.be/TADmFgz4Ze0>, 6 Interim summary (3:19) <https://youtu.be/OOBnDfOL2jE>, 7 VoiceP and VISH (13:13) <https://youtu.be/ciGLYtwDvlk>",
-    "deadlineHW": "",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2027/1/14",
+    "slides": "",
+    "video": "12-7 Relative clauses (9:12)<https://www.youtube.com/watch?v=58vEs9yRqTk&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=7>, 12-8 Island constraints (16:03)<https://www.youtube.com/watch?v=JjCjQhYJKLg&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=8>, 12-9 Minimal Link Condition (15:40)<https://www.youtube.com/watch?v=u_eyrytnE3c&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=9>, 12-10 Wh-in-situ (04:00)<https://www.youtube.com/watch?v=yvFMNifdno8&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=10>",
     "handout": "Assignment 12 (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_f6b1862e65ba4a629c1aa2d91b421e81.pdf>, Assignment 12 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_03568765bca54a96b70983fe0b8b81f5.docx>, Answer key for Assgn 12\t<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_12aa6c533fa2486d82158797a9c440f4.pdf>[after 01/08/2026]",
-    "deadlineClass": "2026/1/9",
-    "date2": "2026/1/9"
+    "deadlineClass": "2027/1/14[13:00:00]",
+    "deadlineHW": "2027/1/20[12:00:00]",
+    "date2": "2027/1/14"
   },
   {
     "session": "",
-    "chapter": "Chapter 11",
-    "class": "DP Movement (Part 2)<br>(A-movement)",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
     "format": "",
     "date": "",
-    "video": "1 Wh-movement (15:07)<https://www.youtube.com/watch?v=rycBQT2S0Fo&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=1>, 2 Simple derivation (8:35)<https://www.youtube.com/watch?v=x5hmsYvL0rU&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=2>, 3 Traces (9:09)<https://www.youtube.com/watch?v=H1hJIcNiUcw&list=PL1ymN_px3GFSpoJKAatjr8mAX29UWZCRe&index=6>",
-    "deadlineHW": "2026/1/22",
+    "slides": "",
+    "video": "",
     "handout": "Assignment 13 (pdf) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_4926c01a00d54fdabfb55c59e2df3f72.pdf>, Assignment 13 (docx) <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_8cc7b9553024488a87f51ea05e083d73.docx>, Answer Key for Assgn 13 <https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_934cb90b600947d5a294b009a7a6606c.pdf>",
     "deadlineClass": "",
+    "deadlineHW": "",
     "date2": ""
   },
   {
     "session": "14",
-    "chapter": "Chapter 12",
-    "class": "Wh-movement<br>(A'-movement)",
-    "format": "face-to-face",
-    "date": "2026/1/23",
+    "chapter": "",
+    "class": "<b><span class=\"lang-ja\">  <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
+    "date": "2027/1/21",
+    "slides": "",
     "video": "Prepare for the final!!",
-    "deadlineHW": "2026/1/29",
     "handout": "",
-    "deadlineClass": "2026/1/23",
-    "date2": "2026/1/23"
+    "deadlineClass": "2027/1/21[13:00:00]",
+    "deadlineHW": "2027/1/27[12:00:00]",
+    "date2": "2027/1/21"
   },
   {
     "session": "Part",
     "chapter": "",
-    "class": "Final exam",
-    "format": "face-to-face",
+    "class": "<b><span class=\"lang-ja\"> Final exam <\/span><span class=\"lang-en\">  <\/span><\/b>\n ",
+    "ClassEn": "",
+    "format": "<span class=\"lang-ja\">（対面）<\/span><span class=\"lang-en\">face-to-face<\/span>",
     "date": "",
-    "video": "1 Selection (13:35)<https://www.youtube.com/watch?v=rR7L20BRYYA&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb>, 2 Auxiliaries (23:42)<https://www.youtube.com/watch?v=cJ5iv3th4iQ&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=2>, 3 Do support (5:36)<https://www.youtube.com/watch?v=TNr1S-07uSY&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=3>, Be Have and Do (5:16)<https://www.youtube.com/watch?v=Qnx8_p5gvUw&list=PL1ymN_px3GFRWwZwX4R6N6_bBseZTY1qb&index=4>",
-    "deadlineHW": "",
-    "handout": "",
-    "deadlineClass": "",
-    "date2": ""
-  },
-  {
-    "session": "Part",
-    "chapter": "",
-    "class": "",
-    "format": "",
-    "date": "",
+    "slides": "",
     "video": "",
-    "deadlineHW": "",
     "handout": "",
     "deadlineClass": "",
-    "date2": ""
-  },
-  {
-    "session": "",
-    "chapter": "Additional assignment for Lamia Mostofa",
-    "class": "",
-    "format": "",
-    "date": "",
-    "video": "Only for Mostofa<https://91fefc4d-047b-4ea2-946f-b7b816f5c8be.usrfiles.com/ugd/91fefc_462b7b7669874b009ca6c25f57202827.pdf>[after 13:00 01/30/2026]",
     "deadlineHW": "",
-    "handout": "",
-    "deadlineClass": "",
     "date2": ""
   }
 ]
@@ -801,13 +2018,14 @@ const scheduleData =
 const GeneralComment = "";
 // セクションタイトルの識別子を定義
 const SECTION_TITLE_IDENTIFIER = "Part";
+// 現在どのPart（セクション）を処理しているかを保持する変数
+let currentPartIndex = 0;
 // =====================
 // UI elements
 // =====================
 const btnSession     = document.getElementById('btnSession');
 const btnFull        = document.getElementById('btnFull');
 const sessionSelect  = document.getElementById('sessionSelect');
-// const tbody = document.querySelector('#scheduleTable tbody'); // このIDは存在しないため削除
 const searchBox = document.getElementById('searchBox');
 const generalCommentDiv = document.getElementById('generalComment');
 const fullScheduleContainer = document.getElementById('fullScheduleContainer');
@@ -816,22 +2034,53 @@ const tableTemplate = document.getElementById('tableTemplate');
 // ----------------------
 // Utilities
 // ----------------------
-/* ↓↓↓ 変更: 日付パース関数を修正 (YYYY/MM/DD形式に対応) ↓↓↓ */
 /**
  * スケジュールデータの日付 (YYYY/MM/DD形式) をパースする。
- * 期限はその日の終わり (23:59:59) とする。
  */
-function parseDeadlineAsLocal(deadlineStr){
-  if(!deadlineStr) return null;
-  const parts = deadlineStr.split('/').map(x=>parseInt(x,10));
-  if(parts.length<3 || parts.some(isNaN)) return null;
-  // YYYY/MM/DD形式なので [y, m, d] で受け取る (元は [m, d, y] だったためバグっていた)
-  const [y,m,d] = parts;
-  // 期限は指定日の終わり (23:59:59)
-  return new Date(y,m-1,d,23,59,59);
+ 
+ function parseDeadlineAsLocal(deadline) {
+  if (!deadline) return null;
+  // ① 全角スペースなどを取り除き、クリーンな文字列にする
+  let safeStr = String(deadline).replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
+  // ② 文字列に "/" または "-" が含まれている場合 (日付形式)
+  if (safeStr.includes('/') || safeStr.includes('-')) {
+    // iPhone/Mac Safari対策で "-" を "/" に変換
+    safeStr = safeStr.replace(/-/g, '/');
+    
+    let dateStringForParsing = safeStr;
+    let hasTimeSpecified = false;
+    // ★追加: "2026/6/17[12:37:30]" のようなカッコ形式の解析
+    const bracketMatch = safeStr.match(/^(.*?)\[(.*?)\]/);
+    if (bracketMatch) {
+      // カッコが見つかったら、日付部分と時刻部分を取り出して半角スペースで繋ぐ
+      const datePart = bracketMatch[1].trim(); // "2026/6/17"
+      const timePart = bracketMatch[2].trim(); // "12:37:30"
+      dateStringForParsing = `${datePart} ${timePart}`; // JavaScriptが読める形式にする
+      hasTimeSpecified = true;
+    } else if (safeStr.includes(':')) {
+      // 従来の "YYYY/MM/DD HH:MM:SS" も念のため対応
+      hasTimeSpecified = true;
+    }
+    // クリーンになった文字列を日付オブジェクトに変換
+    const date = new Date(dateStringForParsing);
+    
+    if (!isNaN(date.getTime())) {
+      // 時刻指定がなかった場合のみ、23:59:59にセット
+      if (!hasTimeSpecified) {
+        date.setHours(23, 59, 59); 
+      }
+      return date;
+    }
+  }
+  // ③ Excelのシリアル値（数値）だった場合の処理
+  let serial = Number(safeStr);
+  if (!isNaN(serial)) {
+    const date = new Date((serial - 25569) * 86400 * 1000);
+    date.setHours(23, 59, 59); // シリアル値は日付のみなので終わりに設定
+    return date;
+  }
+  return null;
 }
-/* ↑↑↑ 変更 ↑↑↑ */
-/* 時刻指定に対応した利用開始日時パース関数 ↓↓↓ */
 /**
  * コンテンツの利用開始日時 (MM/DD/YYYY形式または HH:mm MM/DD/YYYY形式) をパースする。
  * ※この関数はscheduleData本体ではなく、handoutやvideo内の[after ...]タグを処理するために使用される。
@@ -872,7 +2121,7 @@ function parseEntries(fieldStr){
     const entries = [];
     // regex to capture "anything <url>" and optional "[after date]" (case-insensitive)
     /* ↓↓↓ 変更: [after 日付] をオプションでキャプチャ ↓↓↓ */
-    const regex = /^(.*?)<([^>]+)>(?:\s*\[after\s+([^\]]+)\])?$/i;
+    const regex = /^(.*?)<(https?:\/\/[^>]+)>(?:\s*\[after\s+([^\]]+)\])?$/i;
     parts.forEach(p=>{
       const m = p.match(regex);
       if(m){
@@ -972,30 +2221,96 @@ function findRelevantSessions() {
     
     return { lastClass, nextClass, afterNextClass };
 }
-/* ↑↑↑ 追加 ↑↑↑ */
 // ----------------------
 // Rendering
 // ----------------------
 function init(){
-  generalCommentDiv.textContent = GeneralComment;
-  /* ↓↓↓ 変更: 内部IDやドロップダウン生成ロジックは不要なため削除 ↓↓↓ */
-  /* ↓↓↓ 追加: テーブル構造の初期化 ↓↓↓ */
+  generalCommentDiv.textContent = GeneralComment;
+  
+  // 1. まずテーブルの枠組みを作る
   initializeTables();
-  /* ↑↑↑ 追加 ↑↑↑ */
-  setMode('session');
-  btnSession.addEventListener('click',()=>setMode('session'));
-  btnFull.addEventListener('click',()=>setMode('full'));
-  /* ↓↓↓ 変更: イベントリスナーの調整 (sessionSelect変更イベントは不要) ↓↓↓ */
-  // sessionSelect.addEventListener('change',...);
-  // 検索ボックスのイベントリスナーを調整
-  searchBox.addEventListener('input',()=>{
-    // 検索はFullモードでのみ動作するように設定
+  
+  /* -----------------------------
+   showAdjacentSessions(center)
+   クリックした session 番号（数値または文字列）を受け取り、
+   「Class N-1 / Class N / Class N+1」を BySession と同じ見た目で表示する
+   ※ 既存の renderTable(tableId, dataArray, emptyMessage) を再利用します
+   ----------------------------- */
+function showAdjacentSessions(centerSessionRaw) {
+  // 数値化して安全に扱う
+  const centerSession = Number(centerSessionRaw);
+  if (isNaN(centerSession)) return;
+  // Part 行を除き、session を数値化できる行だけでソートする
+  const numericSessions = scheduleData
+    .filter(item => item.session !== SECTION_TITLE_IDENTIFIER)
+    .map(item => Object.assign({}, item, { sessionNum: Number(item.session) }))
+    .filter(item => Number.isInteger(item.sessionNum))
+    .sort((a, b) => a.sessionNum - b.sessionNum);
+  const idx = numericSessions.findIndex(s => s.sessionNum === centerSession);
+  if (idx === -1) return;
+  const prev = numericSessions[idx - 1] || null;
+  const curr = numericSessions[idx] || null;
+  const next = numericSessions[idx + 1] || null;
+  // セッション画面に切り替え（見た目はBySessionと同じパネルを使う）
+  document.body.dataset.mode = 'session';
+  btnSession.classList.add('active');
+  btnSession.setAttribute('aria-selected', 'true');
+  btnFull.classList.remove('active');
+  btnFull.setAttribute('aria-selected', 'false');
+  fullScheduleContainer.style.display = 'none';
+  sessionOverviewContainer.style.display = 'block';
+  searchBox.disabled = true;
+  searchBox.value = '';
+  // 正しいレンダラを呼ぶ
+  renderTripleSessionView(prev, curr, next);
+}
+/* -----------------------------
+   renderTripleSessionView(prev,curr,next)
+   各パネル（panelLast/panelNext/panelAfterNext）を、
+   BySession と **同じ**テーブル描画関数 renderTable(...) で埋める
+   ※ タイトルは "Class N" 形式にする
+   ----------------------------- */
+function renderTripleSessionView(prev, curr, next) {
+  const panels = [
+    { panelId: 'panelLast', data: prev, tableId: 'scheduleTable_panelLast' },
+    { panelId: 'panelNext', data: curr, tableId: 'scheduleTable_panelNext' },
+    { panelId: 'panelAfterNext', data: next, tableId: 'scheduleTable_panelAfterNext' }
+  ];
+  panels.forEach(({ panelId, data, tableId }) => {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    // タイトルを書き換える（"Class N" または空）
+    const h2 = panel.querySelector('h2');
+    if (data && Number.isInteger(Number(data.session))) {
+      h2.textContent = `Class ${Number(data.session)}`;
+    } else {
+      h2.textContent = '';
+    }
+    // テーブル描画：renderTable は (tableId, dataArray, emptyMessage) を受け取る想定
+    // データがある場合は [data] を渡す（配列）。無ければ空配列。
+    if (data) {
+      renderTable(tableId, [data]);
+    } else {
+      renderTable(tableId, [], '該当なし');
+    }
+  });
+}
+ 
+  // 2. データを実際に描画する（これを先に行う）
+  renderFull(); 
+  
+  // 3. その後でモードを切り替えて表示状態を確定させる
+  setMode('full');
+  
+  btnSession.addEventListener('click',()=>setMode('session'));
+  btnFull.addEventListener('click',()=>setMode('full'));
+  
+  searchBox.addEventListener('input',()=>{
     if(btnFull.classList.contains('active')) {
         renderFull();
     }
   });
 }
-/* ↓↓↓ 追加: 新しいレンダリング関数群 ↓↓↓ */
 /**
  * HTMLテンプレートからテーブル構造を複製し、各コンテナに配置する。
  */
@@ -1021,98 +2336,546 @@ function initializeTables() {
 /**
  * By Session Overview モードの描画処理。
  */
+// =========================================
+//  BySession 描画ロジック (Partスキップ & Date右寄せ修正版)
+// =========================================
+let activeSessionTab = 'next'; // 初期値：次回
 function renderSessionOverview() {
-    const { lastClass, nextClass, afterNextClass } = findRelevantSessions();
-    // 各パネルに対応するテーブルIDとデータを指定して描画
-    // 過去の授業がない場合はメッセージは表示しない（Class 0が表示されるか、空欄になる）
-    renderTable('scheduleTable_panelLast', lastClass);
-    // 未来の授業がない場合はメッセージを表示
-    renderTable('scheduleTable_panelNext', nextClass, "計画されている授業はありません");
-    renderTable('scheduleTable_panelAfterNext', afterNextClass, "計画されている授業はありません");
+  const container = document.getElementById('sessionOverviewContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  // 1. データの特定（Partを除外して計算）
+  // ------------------------------------------------
+  
+  // ★重要：Sessionが 'Part' のものを除外したリストを作成
+  // ※もし 'Part 1' のように番号つく場合も含めるなら !item.session.includes('Part') に変更してください
+  const validSessions = scheduleData.filter(item => item.session !== 'Part');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let nextIndex = -1;
+  
+  // 除外後のリスト(validSessions)を使って次回を探す
+  for (let i = 0; i < validSessions.length; i++) {
+    let sDate;
+    if (validSessions[i].date2 && !isNaN(Number(validSessions[i].date2))) {
+       sDate = new Date((Number(validSessions[i].date2) - 25569) * 86400 * 1000);
+    } else {
+       sDate = new Date(validSessions[i].date);
+    }
+    
+    // 今日の日付以降の最初の授業を探す
+    if (sDate >= today) {
+      nextIndex = i;
+      break;
+    }
+  }
+  // もし全て過去なら
+  if (nextIndex === -1) nextIndex = validSessions.length;
+  // インデックスの特定（validSessions配列内での位置）
+  const dataMap = {
+    prev:      (nextIndex - 1 >= 0) ? validSessions[nextIndex - 1] : null,
+    next:      (nextIndex < validSessions.length) ? validSessions[nextIndex] : null,
+    afterNext: (nextIndex + 1 < validSessions.length) ? validSessions[nextIndex + 1] : null
+  };
+  // 2. タブの描画
+  // ------------------------------------------------
+  const tabContainer = document.createElement('div');
+  tabContainer.className = 'session-tab-container';
+  const tabs = [
+    { key: 'prev',      label: '前回',   colorClass: 'tab-prev' },
+    { key: 'next',      label: '次回',   colorClass: 'tab-next' },
+    { key: 'afterNext', label: '次々回', colorClass: 'tab-after-next' }
+  ];
+  tabs.forEach(tab => {
+    const btn = document.createElement('button');
+    btn.textContent = tab.label;
+    btn.className = `session-tab-btn ${tab.colorClass}`;
+    
+    if (tab.key === activeSessionTab) {
+      btn.classList.add('active');
+    }
+    if (!dataMap[tab.key]) {
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'default';
+    }
+    btn.onclick = () => {
+      if (dataMap[tab.key]) {
+        activeSessionTab = tab.key;
+        renderSessionOverview();
+      }
+    };
+    tabContainer.appendChild(btn);
+  });
+  container.appendChild(tabContainer);
+  // 3. コンテンツエリアの描画
+  // ------------------------------------------------
+  const contentWrapper = document.createElement('div');
+  contentWrapper.className = 'session-content-wrapper';
+  const item = dataMap[activeSessionTab];
+  if (item) {
+    // A. ヘッダー情報 (左：Class名 / 右：日付)
+    const headerInfo = document.createElement('div');
+    headerInfo.className = 'session-header-info';
+    
+    // 日付フォーマット
+    const formatDateJP = (d) => {
+        if(!d) return '';
+        if(!isNaN(Number(d))) { 
+             const date = new Date((Number(d) - 25569) * 86400 * 1000);
+             return `${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        return d;
+    };
+    const displayDate = formatDateJP(item.date2 || item.date);
+    // タイトル部分（左寄せ）
+    let titleText = '';
+    if (item.session && item.session !== 'Part') {
+        titleText = `Class ${item.session}: ${item.class || ''}`;
+    } else {
+        titleText = item.class || '';
+    }
+    // ★HTML生成：左右にspanを分けることでjustify-content: space-betweenを効かせる
+    headerInfo.innerHTML = `
+      <span>${titleText}</span>
+      <span>${displayDate}</span>
+    `;
+    
+    contentWrapper.appendChild(headerInfo);
+    // B. コメント（Study Notice）
+    if (item.comment) {
+      const noticeDiv = document.createElement('div');
+      noticeDiv.className = 'study-notice';
+      
+      let cleanComment = item.comment;
+      cleanComment = cleanComment.replace(/^(【?コメント】?|comment)[:：]?\s*/i, '');
+      
+      noticeDiv.innerHTML = `
+        <div class="icon">💡</div>
+        <div class="text">
+          <span class="badge-important">今回のポイント</span>
+          
+          ${cleanComment}
+        </div>
+      `;
+      contentWrapper.appendChild(noticeDiv);
+    }
+    // C. ビデオ (Video Grid)
+    if (item.video) {
+      const vTitle = document.createElement('span');
+      vTitle.className = 'section-title';
+      vTitle.textContent = '■ ビデオ：';
+      contentWrapper.appendChild(vTitle);
+      const vGrid = document.createElement('div');
+      vGrid.className = 'video-grid';
+      
+      let videos = [];
+      if(typeof parseEntries === 'function'){
+          videos = parseEntries(item.video);
+      } else {
+          const lines = item.video.split(/\r?\n/);
+          lines.forEach(line => {
+             const match = line.match(/(.*)\((https?:\/\/.*)\)/);
+             if(match){
+                 videos.push({ label: match[1].trim(), url: match[2].trim() });
+             } else {
+                 if(line.trim()) videos.push({ label: line.trim(), url: null });
+             }
+          });
+      }
+      if (videos.length > 0) {
+        videos.forEach(v => {
+          if (v.url) {
+            const a = document.createElement('a');
+            a.href = v.url;
+            a.className = 'button video-btn';
+            a.textContent = v.label;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            vGrid.appendChild(a);
+          } else {
+            const span = document.createElement('span');
+            span.className = 'button';
+            span.style.background = '#eee';
+            span.style.color = '#999';
+            span.textContent = v.label;
+            vGrid.appendChild(span);
+          }
+        });
+      } else {
+        vGrid.innerHTML = '<span style="color:#777; padding:10px;">ビデオはありません</span>';
+      }
+      contentWrapper.appendChild(vGrid);
+    }
+    // D. 資料・課題 (Resources Wrapper)
+    const resWrapper = document.createElement('div');
+    resWrapper.className = 'resources-wrapper';
+    // -- 資料 --
+    const handoutBox = document.createElement('div');
+    handoutBox.className = 'resource-box';
+    handoutBox.innerHTML = '<span class="section-title" style="margin-top:0; border:none; padding:0;">■ 資料：</span>';
+    const hArea = document.createElement('div');
+    hArea.className = 'file-area';
+    
+    let handouts = [];
+    if(typeof parseEntries === 'function') {
+        handouts = parseEntries(item.handout || '');
+    } else {
+        const lines = (item.handout || '').split(/\r?\n/);
+        lines.forEach(line => {
+             const match = line.match(/(.*)\((https?:\/\/.*)\)/);
+             if(match) handouts.push({ label: match[1].trim(), url: match[2].trim() });
+             else if(line.trim()) handouts.push({ label: line.trim(), url: null });
+        });
+    }
+    if (handouts.length > 0) {
+      handouts.forEach(h => {
+        if (h.url) {
+          const a = document.createElement('a');
+          a.href = h.url;
+          let btnClass = 'button';
+          if(h.url.endsWith('.pdf')) btnClass += ' pdf-button';
+          else if(h.url.endsWith('.docx')) btnClass += ' docx-button';
+          a.className = btnClass;
+          a.textContent = h.label;
+          a.target = '_blank';
+          hArea.appendChild(a);
+        } else {
+          const div = document.createElement('div');
+          div.textContent = h.label;
+          div.style.fontSize = '0.9rem';
+          hArea.appendChild(div);
+        }
+      });
+    } else {
+      hArea.innerHTML = '<span style="color:#999; font-size:0.85rem;">資料なし</span>';
+    }
+    handoutBox.appendChild(hArea);
+    resWrapper.appendChild(handoutBox);
+    // -- 課題 --
+    const hwBox = document.createElement('div');
+    hwBox.className = 'resource-box';
+    hwBox.innerHTML = '<span class="section-title" style="margin-top:0; border:none; padding:0;">■ 課題：<a href="https://lms.keio.jp/" class="link-small" target="_blank">提出先</a></span>';
+    const hwArea = document.createElement('div');
+    hwArea.className = 'file-area flex-row';
+    if (item.HW) {
+        if(item.HW.includes('<')) {
+            hwArea.innerHTML = item.HW;
+        } else {
+            let hws = [];
+            if(typeof parseEntries === 'function'){
+                hws = parseEntries(item.HW);
+            } else {
+                const lines = item.HW.split(/\r?\n/);
+                lines.forEach(line => {
+                     const match = line.match(/(.*)\((https?:\/\/.*)\)/);
+                     if(match) hws.push({ label: match[1].trim(), url: match[2].trim() });
+                     else if(line.trim()) hws.push({ label: line.trim(), url: null });
+                });
+            }
+            hws.forEach(hw => {
+                if (hw.url) {
+                    const a = document.createElement('a');
+                    a.href = hw.url;
+                    a.className = 'button docx-button';
+                    a.textContent = hw.label;
+                    a.target = '_blank';
+                    hwArea.appendChild(a);
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = hw.label;
+                    span.style.padding = '5px';
+                    span.style.fontSize = '0.9rem';
+                    hwArea.appendChild(span);
+                }
+            });
+        }
+    } else {
+        hwArea.innerHTML = '<span style="color:#999; font-size:0.85rem;">課題なし</span>';
+    }
+    hwBox.appendChild(hwArea);
+    resWrapper.appendChild(hwBox);
+    contentWrapper.appendChild(resWrapper);
+  } else {
+    // データなし
+    const msg = document.createElement('div');
+    msg.textContent = "このセッションのデータはありません。";
+    msg.style.textAlign = "center";
+    msg.style.padding = "40px";
+    msg.style.color = "#888";
+    contentWrapper.appendChild(msg);
+  }
+  container.appendChild(contentWrapper);
+}
+/**
+ * ガイダンス風レイアウトで構築します
+ */
+/**
+ * セッション詳細カードを生成する関数（新デザイン対応）
+ */
+function createSessionCard(item) {
+  const container = document.createElement('div');
+  container.className = 'tab-content active'; // アニメーション用クラスなどがあれば維持
+  // 0. 日付・クラス情報の表示（これがないといつの授業かわからなくなるため上部に配置）
+  const headerInfo = document.createElement('div');
+  headerInfo.className = 'session-header-info';
+  const dateStr = item.date2 ? item.date2 : item.date;
+  headerInfo.innerHTML = `<span>Class: ${item.class || '-'}</span><span>Date: ${dateStr || '-'}</span>`;
+  container.appendChild(headerInfo);
+  // 1. 通知エリア (study-notice) -> item.comment を表示
+  if (item.comment) {
+    const noticeDiv = document.createElement('div');
+    noticeDiv.className = 'study-notice';
+    noticeDiv.innerHTML = `
+      <div class="icon">💡</div>
+      <div class="text">
+        <span class="badge-important">重要</span>
+        <span class="highlight">コメント</span><br>
+        ${item.comment} 
+      </div>
+    `;
+    container.appendChild(noticeDiv);
+  }
+  // 2. ビデオセクション
+  if (item.video) {
+    // タイトル
+    const vidTitle = document.createElement('span');
+    vidTitle.className = 'section-title';
+    vidTitle.textContent = '■ ビデオ：';
+    container.appendChild(vidTitle);
+    // グリッドエリア
+    const vidGrid = document.createElement('div');
+    vidGrid.className = 'video-grid';
+    const videos = parseEntries(item.video); // 既存のパース関数を使用
+    if (videos.length) {
+      videos.forEach(v => {
+        if (v.url) {
+          const a = document.createElement('a');
+          a.href = v.url;
+          a.className = 'button video-btn'; // スタイル用クラス
+          a.textContent = v.label;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          vidGrid.appendChild(a);
+        } else {
+          // URLがない場合はボタン風のspanにするか、単なるテキスト
+          const span = document.createElement('span');
+          span.className = 'button';
+          span.style.background = '#eee';
+          span.style.color = '#999';
+          span.textContent = v.label;
+          vidGrid.appendChild(span);
+        }
+      });
+    } else {
+      vidGrid.textContent = "ビデオはありません";
+    }
+    container.appendChild(vidGrid);
+    // 注釈（もし固定で表示したいならコメントアウトを外す、あるいはデータに持たせる）
+    // const note = document.createElement('p');
+    // note.className = 'note-text';
+    // note.textContent = '※ビデオは必ず視聴してください。';
+    // container.appendChild(note);
+  }
+  // 3. リソースラッパー（資料と課題を横並びにするエリア）
+  const resourceWrapper = document.createElement('div');
+  resourceWrapper.className = 'resources-wrapper';
+  // --- 3-A. 資料 (Handout) ---
+  const handoutBox = document.createElement('div');
+  handoutBox.className = 'resource-box';
+  handoutBox.innerHTML = '<span class="section-title">■ 資料：</span>';
+  
+  const handoutArea = document.createElement('div');
+  handoutArea.className = 'file-area';
+  
+  const handouts = parseEntries(item.handout);
+  if (handouts.length) {
+    handouts.forEach(h => {
+      if (h.url) {
+        const a = document.createElement('a');
+        a.href = h.url;
+        // 拡張子判定でアイコンを変える（簡易ロジック）
+        let btnClass = 'button';
+        if (h.url.endsWith('.pdf')) btnClass += ' pdf-button';
+        else if (h.url.endsWith('.docx')) btnClass += ' docx-button';
+        
+        a.className = btnClass;
+        a.textContent = h.label;
+        a.target = '_blank';
+        handoutArea.appendChild(a);
+      } else {
+        const div = document.createElement('div');
+        div.textContent = h.label;
+        handoutArea.appendChild(div);
+      }
+    });
+  } else {
+    handoutArea.innerHTML = '<span style="color:#999; font-size:0.9rem;">資料なし</span>';
+  }
+  handoutBox.appendChild(handoutArea);
+  resourceWrapper.appendChild(handoutBox);
+  // --- 3-B. 課題 (HW) ---
+  const hwBox = document.createElement('div');
+  hwBox.className = 'resource-box';
+  // 提出先リンクなどが固定である場合はHTMLに埋め込むか、データから生成
+  hwBox.innerHTML = '<span class="section-title">■ 課題：</span>'; // 必要なら <a class="link-small">提出先</a> を追加
+  
+  const hwArea = document.createElement('div');
+  hwArea.className = 'file-area flex-row'; // 横並び許可
+  
+  // HWはHTMLタグが含まれる場合と、パース可能なテキストの場合があるため分岐処理
+  if (item.HW) {
+    // 既存のデータが単純な文字列かHTMLか判断
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = item.HW;
+    
+    // もし item.HW の中にリンクが含まれているなら、それをボタン化する処理を入れるのも手ですが、
+    // ここでは単純に表示するか、または parseEntries を試みます。
+    // ※もし item.HW が "課題A (url)" のような形式なら parseEntries が有効
+    // ※もし HTMLタグそのものなら、そのまま表示
+    
+    if (item.HW.includes('<')) {
+        // HTMLタグが含まれている場合はそのまま表示
+        hwArea.innerHTML = item.HW; 
+    } else {
+        // テキスト形式ならボタン化を試みる
+        const hws = parseEntries(item.HW);
+        hws.forEach(hw => {
+            if (hw.url) {
+                const a = document.createElement('a');
+                a.href = hw.url;
+                a.className = 'button docx-button'; // 仮にdocxアイコン
+                a.textContent = hw.label;
+                a.target = '_blank';
+                hwArea.appendChild(a);
+            } else {
+                const span = document.createElement('span');
+                span.style.padding = "5px";
+                span.textContent = hw.label;
+                hwArea.appendChild(span);
+            }
+        });
+    }
+  } else {
+    hwArea.innerHTML = '<span style="color:#999; font-size:0.9rem;">課題なし</span>';
+  }
+  
+  hwBox.appendChild(hwArea);
+  resourceWrapper.appendChild(hwBox);
+  // ラッパーを追加
+  container.appendChild(resourceWrapper);
+  return container;
 }
 /**
  * 汎用的なテーブルレンダリング関数。
  * 指定されたIDのテーブルに、指定されたアイテムを描画する。
  */
-function renderTable(tableId, item, emptyMessage = null) {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-    const tbody = table.querySelector('tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (item) {
-        tbody.appendChild(createRow(item));
-    } else if (emptyMessage) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 5; 
-        td.textContent = emptyMessage;
-        td.className = 'empty-message-cell';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-    }
+/**
+ * 汎用的なテーブルレンダリング関数。
+ * 指定されたIDのテーブルに、指定されたアイテムを描画する。
+ */
+/**
+ * 汎用的なテーブルレンダリング関数。
+ * 指定されたIDのテーブルに、指定されたアイテムを描画する。
+ */
+function renderTable(tableId, data, emptyMessage) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = '';
+  currentPartIndex = 0;
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.className = "empty-message-cell";
+    td.textContent = emptyMessage || "データがありません";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+  // 単一オブジェクトの場合は配列に包む
+  const dataArray = Array.isArray(data) ? data : [data];
+  // 各行を生成して追加
+  dataArray.forEach(item => {
+    tbody.appendChild(createRow(item));
+  });
 }
 function setMode(mode){
-  if(mode==='session'){
-    // By Session Overview モード
-    btnSession.classList.add('active'); btnSession.setAttribute('aria-selected','true');
-    btnFull.classList.remove('active'); btnFull.setAttribute('aria-selected','false');
-    /* ↓↓↓ 変更: コンテナ切り替えとOverviewレンダリング ↓↓↓ */
+  // 重要: body.dataset.mode に現在のモードを保持する
+  document.body.dataset.mode = mode;  // ← 追加
+  if(mode==='session'){
+    btnSession.classList.add('active');
+    btnSession.setAttribute('aria-selected','true');
+    btnFull.classList.remove('active');
+    btnFull.setAttribute('aria-selected','false');
     fullScheduleContainer.style.display = 'none';
     sessionOverviewContainer.style.display = 'block';
-    // 検索ボックスはOverviewモードでは無効化し、値をクリア
     searchBox.disabled = true;
     searchBox.value = '';
     renderSessionOverview();
-  } else {
-    // Full Schedule モード
-    btnFull.classList.add('active'); btnFull.setAttribute('aria-selected','true');
-    btnSession.classList.remove('active'); btnSession.setAttribute('aria-selected','false');
-    /* ↓↓↓ 変更: コンテナ切り替えとFullレンダリング ↓↓↓ */
+  } else {
+    btnFull.classList.add('active');
+    btnFull.setAttribute('aria-selected','true');
+    btnSession.classList.remove('active');
+    btnSession.setAttribute('aria-selected','false');
     sessionOverviewContainer.style.display = 'none';
     fullScheduleContainer.style.display = 'block';
-    searchBox.disabled = false; // 検索ボックスを有効化
-    renderFull();
-  }
+    searchBox.disabled = false;
+    renderFull();
+  }
 }
-function filterText(item,text){
-  if(!text) return true;
-  text = text.toLowerCase();
-  // タイトル行も検索対象に含めるため、item.classで検索する
-  // Date列も検索対象に含める
-  return (item.class.toLowerCase().includes(text) || 
-          (item.date && item.date.toLowerCase().includes(text)) ||
-          (item.date2 && item.date2.toLowerCase().includes(text)) ||
-          (item.reading && item.reading.toLowerCase().includes(text)) || 
-          (item.comment && item.comment.toLowerCase().includes(text)));
+function filterText(item, text) {
+  if (!text) return true;
+  const s = text.toLowerCase();
+  // 全て String() で囲むことで数値によるエラーを回避
+  const name = String(item.class || "").toLowerCase();
+  const date = String(item.date || "").toLowerCase();
+  const chap = String(item.chapter || "").toLowerCase();
+  
+  return name.includes(s) || date.includes(s) || chap.includes(s);
 }
 function renderFull(){
  
   const tbody = document.querySelector('#scheduleTableFull tbody');
   if (!tbody) return;
   tbody.innerHTML='';
+currentPartIndex = 0;
   const searchText = searchBox.value;
   scheduleData.forEach(item=>{
     if(filterText(item,searchText)) tbody.appendChild(createRow(item));
   });
 }
 function createRow(item){
-  // DocumentFragmentを使って複数行をまとめて返す
   const frag = document.createDocumentFragment();
-  /* セクションタイトル行の処理 */
+  /* --- セクションタイトル（Part）行の処理 --- */
+  /* --- セクションタイトル（Part）行の処理 --- */
   if (item.session === SECTION_TITLE_IDENTIFIER) {
+    currentPartIndex++;
     const tr = document.createElement('tr');
-    tr.className = 'section-title-row';
+    tr.className = `section-title-row part-color-${currentPartIndex}`;
     const tdTitle = document.createElement('td');
-    tdTitle.colSpan = 5; // 6列から5列に変更
-    tdTitle.textContent = item.class;
+    tdTitle.colSpan = 5;
+    
+    // HTMLタグをそのまま挿入して言語切り替えを有効にする
+    tdTitle.innerHTML = item.class; 
     tr.appendChild(tdTitle);
     frag.appendChild(tr);
     return frag;
   }
-  /* === 1行目: メイン情報 === */
-  const trMain = document.createElement('tr');
+  
+ /* === 1行目: メイン情報 === */
+const trMain = document.createElement('tr');
+// 行クリックによるモード切替処理を削除
+  // 「補講」ならゆるく囲むクラスを付ける
+if (item && (item.format === "補講" || item.format === "休講")) {
+  trMain.classList.add("makeup-row");
+}
   const today = new Date();
+const trVideo = document.createElement('tr');
+trVideo.className = "video-row";
+if (item && (item.format === "補講" || item.format === "休講")) {
+  trVideo.classList.add("makeup-row");
+}
   const deadlineDate = parseDeadlineAsLocal(item.deadlineClass);
   const deadlineDate2 = parseDeadlineAsLocal(item.deadlineHW);
   const hwClass = (deadlineDate && !isNaN(deadlineDate.getTime())) ? (today <= deadlineDate ? 'hw-due' : 'hw-past') : '';
@@ -1123,131 +2886,269 @@ function createRow(item){
   tdSession.className = "col1 " + hwClass;
   // --- Date Cell (Col 2) ---
   const tdDate = document.createElement('td');
-  const dateContent = item.date2 || item.date || '';
+  function formatExcelDate(serial) {
+  if (!serial || isNaN(Number(serial))) return serial;
+  const date = new Date((Number(serial) - 25569) * 86400 * 1000);
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+  
+  const dateContent = formatExcelDate(item.date2 || item.date || '');
   if (item.format) {
     tdDate.innerHTML = `${dateContent}<br><br><span style="font-size:0.85em; color:var(--muted);">${item.format}</span>`;
   } else {
     tdDate.textContent = dateContent;
   }
   tdDate.className = "col-date " + hwClass;
+ 
   // --- Chapter Cell (Col 3) ---
   const tdChapter = document.createElement('td');
-  tdChapter.innerHTML = item.chapter || ''; 
+  tdChapter.innerHTML = item.chapter || ''; // "序章" などがそのまま入る
   tdChapter.className = "col-chapter " + hwClass;
   // --- Class Cell (Col 4) ---
   const tdClass = document.createElement('td');
-  const classContent = item.class || ''; 
-  tdClass.innerHTML = classContent;
   tdClass.className = "col2 " + hwClass;
-  // --- Handout/Docs Cell (Col 5) ---
+  if (item.class) {
+    // ★追加：データの中に <br> があれば、改行コード(\n)に変換して分割しやすくする
+    const classRaw = item.class.replace(/<br\s*\/?>/gi, '\n');
+    const classEntries = parseEntries(classRaw); // classRaw をパースする
+    
+    classEntries.forEach((entry, index) => {
+      // [after ...] を消してきれいなラベルにする
+      const cleanLabel = entry.label.replace(/\[after\s+[^\]]+\]/i, '').trim();
+      const entryDiv = document.createElement('div');
+      entryDiv.style.marginBottom = '6px'; 
+      if (entry.url) {
+        // --- URLがある場合：ボタンにする ---
+        const a = document.createElement('a');
+        a.className = 'button btn-video'; 
+        a.innerHTML = cleanLabel; 
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        let isAvailable = true;
+        if (entry.availableAfterStr) {
+          const startTime = parseAvailableFromAsLocal(entry.availableAfterStr);
+          if (!startTime || isNaN(startTime.getTime()) || new Date() < startTime) {
+            isAvailable = false;
+          }
+        }
+        if (isAvailable) {
+          a.href = entry.url;
+        } else {
+          a.classList.add('disabled');
+          a.style.pointerEvents = 'none';
+          a.style.opacity = '0.5';
+          a.title = `公開日時: ${entry.availableAfterStr}`;
+          a.href = 'javascript:void(0);';
+        }
+        
+        entryDiv.appendChild(a);
+      } else {
+        // --- URLがない場合：ただのテキストとして表示 ---
+        const spanWrapper = document.createElement('span');
+        spanWrapper.innerHTML = cleanLabel; 
+        entryDiv.appendChild(spanWrapper);
+      }
+      
+      tdClass.appendChild(entryDiv);
+    });
+  }
+  // --- Video/Handout Cell (Col 5) ---
   const tdHandout = document.createElement('td');
-  tdHandout.className = "col3 " + hwClass; 
+  tdHandout.className = "col3 " + hwClass2; 
   
+  // 1. Videoの処理
+  if (item.video) {
+    const videoEntries = parseEntries(item.video);
+    videoEntries.forEach((entry) => {
+      const a = document.createElement('a');
+      a.className = 'handout-link btn-video'; // 'btn-video' をCSSで定義してオレンジ～茶色にする
+      a.textContent = `${entry.label}`;
+      
+      // 日付制限のロジックを適用
+      let isAvailable = true;
+      if (entry.availableAfterStr) {
+        const startTime = parseAvailableFromAsLocal(entry.availableAfterStr);
+        if (!startTime || isNaN(startTime.getTime()) || today < startTime) {
+          isAvailable = false;
+        }
+      }
+      
+      if (isAvailable) {
+        a.href = entry.url || '#';
+        a.target = '_blank';
+      } else {
+        a.classList.add('disabled');
+        a.title = `Available from ${entry.availableAfterStr}`;
+      }
+      tdHandout.appendChild(a);
+      tdHandout.appendChild(document.createElement('br'));
+    });
+  }
+  // 2. Handoutの処理
   const handoutRaw = (item.handout || '').replace(/<br\s*\/?>/gi, '\n');
   const handoutEntries = parseEntries(handoutRaw);
   
   handoutEntries.forEach((entry, index) => {
-    if (index > 0) {
-      tdHandout.appendChild(document.createElement('br'));
-    }
     if (entry.url) {
       const a = document.createElement('a');
       a.className = 'handout-link';
       a.textContent = entry.label;
+      
       let isAvailable = true;
       if (entry.availableAfterStr) {
-        const availableStartTime = parseAvailableFromAsLocal(entry.availableAfterStr);
-        if (!availableStartTime || isNaN(availableStartTime.getTime()) || today < availableStartTime) {
+        const startTime = parseAvailableFromAsLocal(entry.availableAfterStr);
+        if (!startTime || isNaN(startTime.getTime()) || today < startTime) {
           isAvailable = false;
         }
       }
+      
       if (isAvailable) {
         a.href = entry.url;
         a.target = '_blank';
-        a.rel = 'noopener noreferrer';
       } else {
         a.classList.add('disabled');
-        a.setAttribute('aria-disabled', 'true');
-        if (entry.availableAfterStr) {
-          a.title = `Available from ${entry.availableAfterStr}`;
-        }
+        a.title = `Available from ${entry.availableAfterStr}`;
       }
       tdHandout.appendChild(a);
     } else {
       tdHandout.appendChild(document.createTextNode(entry.label));
     }
+    // 次の要素がある場合のみ改行を入れる
+    if (index < handoutEntries.length - 1) {
+      tdHandout.appendChild(document.createElement('br'));
+    }
   });
   // メイン行にセルを追加 (5列)
   [tdSession, tdDate, tdChapter, tdClass, tdHandout].forEach(td=>trMain.appendChild(td));
+  
   frag.appendChild(trMain);
-  /* === 2行目: Videos (Homework) === */
-  const trVideo = document.createElement('tr');
-  trVideo.className = "video-row";
-  // 1. スペーサーセルを作成 (Session, Date, Chapter, Classの4列分を埋める)
-  const tdSpacer = document.createElement('td');
-  tdSpacer.colSpan = 4; 
-  tdSpacer.className = "video-spacer"; // 必要に応じてCSSで装飾
-  trVideo.appendChild(tdSpacer);
-  // 2. コンテンツセルを作成 (Docsの1列分に配置)
-  const tdVideos = document.createElement('td');
-  // colspanは指定しない（デフォルト1）か、明示的に1を指定
-  tdVideos.colSpan = 1; 
-  // クラスはDocs列と同じスタイルを継承しつつ、期限の色設定(hwClass2)も適用
-  tdVideos.className = "col3 " + hwClass2; 
-  // ラベル追加
-  const label = document.createElement('span');
-  label.className = "video-row-label";
-  label.textContent = "Videos for next session:";
-  tdVideos.appendChild(label);
-  const videos = parseEntries(item.video);
-  if(videos.length){
-    const ul = document.createElement('ul'); ul.className='video-list';
-    videos.forEach(v=>{
-      const li = document.createElement('li');
-      if(v.url){
-        const anchor = document.createElement('a');
-        anchor.className='video-btn';
-        anchor.textContent=v.label;
-        let isAvailable = true;
-        if (v.availableAfterStr) {
-          const availableStartTime = parseAvailableFromAsLocal(v.availableAfterStr);
-          if (!availableStartTime || isNaN(availableStartTime.getTime()) || today < availableStartTime) {
-            isAvailable = false;
-          }
-        }
-        if (isAvailable) {
-          anchor.href = v.url;
-          anchor.target = '_blank';
-          anchor.rel = 'noopener noreferrer';
-        } else {
-          anchor.classList.add('disabled');
-          anchor.setAttribute('aria-disabled', 'true');
-          if (v.availableAfterStr) {
-            anchor.title = `Available from ${v.availableAfterStr}`;
-          }
-        }
-        li.appendChild(anchor);
-      } else {
-        li.textContent=v.label;
-      }
-      ul.appendChild(li);
-    });
-    tdVideos.appendChild(ul);
-  } else {
-    // 動画がない場合
-    const span = document.createElement('span');
-    span.textContent = "None";
-    span.style.color = "var(--muted)";
-    span.style.fontStyle = "italic";
-    tdVideos.appendChild(span);
-  }
-  
-  trVideo.appendChild(tdVideos);
-  frag.appendChild(trVideo);
-  
   return frag;
 }
 document.addEventListener('DOMContentLoaded',init);
+function showAdjacentSessions(centerSession) {
+  setMode('session'); // ← 既存の BySession モードに切り替え
+  const numericSessions = scheduleData
+    .filter(s => typeof s.session === "number")
+    .sort((a, b) => a.session - b.session);
+  const index = numericSessions.findIndex(
+    s => s.session === centerSession
+  );
+  if (index === -1) return;
+  const prev = numericSessions[index - 1] || null;
+  const curr = numericSessions[index];
+  const next = numericSessions[index + 1] || null;
+  renderTripleSessionView(prev, curr, next);
+}
+/* -----------------------------
+   showAdjacentSessions(center)
+   クリックした session 番号（数値または文字列）を受け取り、
+   「Class N-1 / Class N / Class N+1」を BySession と同じ見た目で表示する
+   ※ 既存の renderTable(tableId, dataArray, emptyMessage) を再利用します
+   ----------------------------- */
+function showAdjacentSessions(centerSessionRaw) {
+  // 安全化： "6" などの文字列も許容して数値化する
+  const centerSession = Number(centerSessionRaw);
+  if (isNaN(centerSession)) return;
+  // 1. numericSessions：'Part' を除き session を数値化できる要素だけ抽出
+  const numericSessions = scheduleData
+    .filter(item => item.session !== SECTION_TITLE_IDENTIFIER)
+    .map(item => {
+      return Object.assign({}, item, { sessionNum: Number(item.session) });
+    })
+    .filter(item => Number.isInteger(item.sessionNum))
+    .sort((a, b) => a.sessionNum - b.sessionNum);
+  // 2. 中央のインデックスを探す
+  const idx = numericSessions.findIndex(s => s.sessionNum === centerSession);
+  if (idx === -1) {
+    // 該当セッションが見つからなければ何もしない（安全）
+    return;
+  }
+  const prev = numericSessions[idx - 1] || null;
+  const curr = numericSessions[idx] || null;
+  const next = numericSessions[idx + 1] || null;
+  // 3. UI を BySession と同じ見た目に切り替える（ただし renderSessionOverview を呼ばない）
+  //    — 既に DOM にある panelLast/panelNext/panelAfterNext を使う想定
+  document.body.dataset.mode = 'session';
+  btnSession.classList.add('active');
+  btnSession.setAttribute('aria-selected', 'true');
+  btnFull.classList.remove('active');
+  btnFull.setAttribute('aria-selected', 'false');
+  fullScheduleContainer.style.display = 'none';
+  sessionOverviewContainer.style.display = 'block';
+  // 検索ボックスは Overview モード相当で無効化
+  searchBox.disabled = true;
+  searchBox.value = '';
+  // 4. パネルにデータを差し替える（見た目は BySession と同じ）
+  renderTripleSessionView(prev, curr, next);
+}
+/* -----------------------------
+   renderTripleSessionView(prev,curr,next)
+   各パネル（panelLast/panelNext/panelAfterNext）を、
+   BySession と **同じ**テーブル描画関数 renderTable(...) で埋める
+   ※ タイトルは "Class N" 形式にする
+   ----------------------------- */
+// 修正版：initializeTables() で作成される table ID と一致させる
+function renderTripleSessionView(prev, curr, next) {
+  const panels = [
+    { panelId: 'panelLast', tableId: 'scheduleTable_panelLast', data: prev },
+    { panelId: 'panelNext', tableId: 'scheduleTable_panelNext', data: curr },
+    { panelId: 'panelAfterNext', tableId: 'scheduleTable_panelAfterNext', data: next }
+  ];
+  panels.forEach(({ panelId, tableId, data }) => {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    // タイトルを書き換える（"Class N" または空）
+    const h2 = panel.querySelector('h2');
+    if (data && Number.isInteger(Number(data.session))) {
+      h2.textContent = `Class ${Number(data.session)}`;
+    } else {
+      h2.textContent = '';
+    }
+    // テーブルに描画（initializeTables() が作るIDを使う）
+    if (data) {
+      renderTable(tableId, [data]);
+    } else {
+      renderTable(tableId, [], '該当なし');
+    }
+  });
+}
+function renderTripleSessionView(prev, curr, next) {
+  const panels = [
+    { id: "panelLast", data: prev },
+    { id: "panelNext", data: curr },
+    { id: "panelAfterNext", data: next }
+  ];
+  panels.forEach(({ id, data }) => {
+    const panel = document.getElementById(id);
+    const title = panel.querySelector("h2");
+    if (!data) {
+      title.textContent = "";
+      renderTable(id + "Table", [], "該当なし");
+      return;
+    }
+    title.textContent = `Class ${data.session}`;
+    renderTable(id + "Table", [data]);
+  });
+}
+// HTMLがすべて読み込まれてから実行する（エラー防止）
+document.addEventListener('DOMContentLoaded', function() {
+    const langBtn = document.getElementById('lang-btn');
+    
+    // もしページ内にボタンが無くてもエラーを出さないための安全対策
+    if (!langBtn) return; 
+    langBtn.addEventListener('click', function(e) {
+        // もしボタンを <a href="#"> 等で作っていた場合、画面がリロードされるのを防ぐ
+        e.preventDefault(); 
+        
+        document.body.classList.toggle('is-en');
+        
+        if (document.body.classList.contains('is-en')) {
+            langBtn.textContent = '日本語';
+        } else {
+            langBtn.textContent = 'English';
+        }
+    });
+});
 </script>
 </body>
 </html>
