@@ -1188,8 +1188,8 @@ function openSubTab(evt, subName) {
   <li><button onclick="openTab(event, 'caution-grid')">履修条件</button></li>
   <li><button onclick="openTab(event, 'study')">予習</button></li>
   <li><button onclick="openTab(event, 'grades')">成績</button></li>
-  <li><button class="active" onclick="openTab(event, 'firstClass')">ガイダンス</button></li>
-  <li><button onclick="openTab(event, 'schedule')">日程</button></li>
+  <li><button onclick="openTab(event, 'firstClass')">ガイダンス</button></li>
+  <li><button onclick="openTab(event, 'schedule')" class="active">日程</button></li>
   <li><button onclick="openTab(event, 'news')">お知らせ</button></li>
   <li><button onclick="openTab(event, 'subjects')">関連科目</button></li>
 </ul>
@@ -1308,7 +1308,7 @@ function openSubTab(evt, subName) {
   
   
   
-<div id="firstClass" class="tab-content active">
+<div id="firstClass" class="tab-content">
   <div class="study-notice">
     <div class="icon">💡</div>
     <div class="text">
@@ -1582,7 +1582,7 @@ function openSubTab(evt, subName) {
 </div>
   
   </div>
-<div id="schedule" class="tab-content">
+<div id="schedule" class="tab-content active">
   <div class="wrap">
 	スケジュールは暫定版で、今後変更されることがありうることに注意してください。
     <div class="card">
@@ -1677,7 +1677,7 @@ const scheduleData =
   {
     "session": "0",
     "chapter": "第1章",
-    "class": "",
+    "class": "イントロダクション",
     "format": "on-demand",
     "date": "",
     "deadlineHW": "2025/10/2",
@@ -1703,7 +1703,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2026/10/1",
     "deadlineHW": "2025/10/9",
-    "handout": "第2回目までの宿題, \n課題１<https://keiosfc-aki2025.github.io/syntax/assign1.pdf>,\n解答解説（問１～４）<https://youtu.be/Y7F815OELHQ>[after 2026/10/06 00:00],\n解答解説（問５～７）<https://youtu.be/dLvxHmYlKvo>[after 2026/10/06 00:00]",
+    "handout": "■ 第2回目までの宿題①（10月6日[火] 正午まで）, \n課題１<https://keiosfc-aki2025.github.io/syntax/assign1.pdf>,\n■ 第2回目までの宿題②（10月8日[木]授業開始まで）,\n解答解説（問１～４）<https://youtu.be/Y7F815OELHQ>[after 2026/10/06 12:00],\n解答解説（問５～７）<https://youtu.be/dLvxHmYlKvo>[after 2026/10/06 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第2講）<https://keiosfc-aki2025.github.io/syntax/class2.pdf>",
     "deadlineClass": "2025/10/3",
     "date2": "2026/10/1"
   },
@@ -1720,34 +1720,34 @@ const scheduleData =
   },
   {
     "session": "2",
-    "chapter": "第3章\n\n\n第4章",
-    "class": "PSGとGB理論\n3.1 PSG\n3.2 X'理論\nVP\n4.1 基本的なパターン\n4.2 格\n4.3 挿入（その１）",
+    "chapter": "第3章",
+    "class": "PSGとGB理論\n3.1 PSG\n3.2 X'理論\n",
     "format": "face-to-face",
     "date": "2026/10/8",
     "deadlineHW": "2025/10/16",
-    "handout": "第3回目までの宿題, \n課題２<https://keiosfc-aki2025.github.io/syntax/assign2.pdf>",
+    "handout": "■ 第3回目までの宿題①（10月13日[火] 正午まで）, \n課題２<https://keiosfc-aki2025.github.io/syntax/assign2.pdf>,\n■ 第3回目までの宿題②（10月15日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/10/13 12:00],\n解答解説（問５～７）<>[after 2026/10/13 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第3講）<https://keiosfc-aki2025.github.io/syntax/class3.pdf>",
     "deadlineClass": "2025/10/10",
     "date2": "2026/10/8"
   },
   {
     "session": "3",
-    "chapter": "第5章",
-    "class": "NP\n5.1 基本的なパターン\n5.2 同質異像\n5.3 挿入（その２）",
+    "chapter": "第4章",
+    "class": "VP\n4.1 基本的なパターン\n4.2 正しい文を作るための原則II",
     "format": "face-to-face",
     "date": "2026/10/15",
     "deadlineHW": "2025/10/23",
-    "handout": "第4回目までの宿題, \n第6章 AP PP and AdvP,\n6.1 AP, 6.2 AdvP, 6.3 PP,\n課題３<https://keiosfc-aki2025.github.io/syntax/assign3.pdf>",
+    "handout": "■ 第4回目までの宿題①（10月20日[火] 正午まで）, \n課題３<https://keiosfc-aki2025.github.io/syntax/assign3.pdf>,\n■ 第4回目までの宿題②（10月22日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/10/13 12:00],\n解答解説（問５～７）<>[after 2026/10/13 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第4講）<https://keiosfc-aki2025.github.io/syntax/class4.pdf>",
     "deadlineClass": "2025/10/17",
     "date2": "2026/10/15"
   },
   {
     "session": "4",
-    "chapter": "",
-    "class": "",
+    "chapter": "第5章\n\n",
+    "class": "その他の語彙範疇\n5.1 NP\n5.2 AP\n5.3 AdvP\n5.4 PP",
     "format": "face-to-face",
     "date": "2026/10/22",
     "deadlineHW": "2025/10/30",
-    "handout": "",
+    "handout": "■ 第5回目までの宿題①（10月27日[火] 正午まで）, \n課題４<https://keiosfc-aki2025.github.io/syntax/assign4.pdf>,\n■ 第5回目までの宿題②（10月29日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/10/27 12:00],\n解答解説（問５～７）<>[after 2026/10/27 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第5講）<https://keiosfc-aki2025.github.io/syntax/class5.pdf>",
     "deadlineClass": "2025/10/24",
     "date2": "2026/10/22"
   },
@@ -1764,23 +1764,23 @@ const scheduleData =
   },
   {
     "session": "5",
-    "chapter": "第7章",
-    "class": "IP: その１\n7.1 基本的なパターン\n7.2 データ\n7.3 分析",
+    "chapter": "第6章",
+    "class": "IP（その１）と移動（その１：主要部移動）\n7.1 基本的なパターン\n7.2 データ\n7.3 分析",
     "format": "face-to-face",
     "date": "2026/10/29",
     "deadlineHW": "2025/11/6",
-    "handout": "",
+    "handout": "■ 第6回目までの宿題①（11月3日[火] 正午まで）, \n課題５<https://keiosfc-aki2025.github.io/syntax/assign5.pdf>,\n■ 第6回目までの宿題②（11月5日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/11/5 12:00],\n解答解説（問５～７）<>[after 2026/11/5 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第6講）<https://keiosfc-aki2025.github.io/syntax/class6.pdf>",
     "deadlineClass": "2025/10/31",
     "date2": "2026/10/29"
   },
   {
     "session": "6",
-    "chapter": "第8章",
-    "class": "移動１：主要部移動",
+    "chapter": "第7章",
+    "class": "AuxP",
     "format": "face-to-face",
     "date": "2026/11/5",
     "deadlineHW": "2025/11/13",
-    "handout": "",
+    "handout": "中間テストのために復習！",
     "deadlineClass": "2025/11/7",
     "date2": "2026/11/5"
   },
@@ -1802,14 +1802,14 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2026/11/12",
     "deadlineHW": "2025/11/27",
-    "handout": "第9章 DP",
+    "handout": "■ 第8回目までの宿題①（12月1日[火] 正午まで）, \n「第8章 DP」を視聴見る,\n■ 第8回目までの宿題②（12月1日[火] 正午まで）, \n課題６<https://keiosfc-aki2025.github.io/syntax/assign6.pdf>,\n■ 第8回目までの宿題③（12月3日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/12/1 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第8講）<https://keiosfc-aki2025.github.io/syntax/class8.pdf>",
     "deadlineClass": "2025/11/14",
     "date2": "2026/11/12"
   },
   {
     "session": "",
     "chapter": "",
-    "class": "No class (Mitasai)",
+    "class": "授業なし（三田祭）",
     "format": "",
     "date": "2026/11/19",
     "deadlineHW": "",
@@ -1820,7 +1820,7 @@ const scheduleData =
   {
     "session": "",
     "chapter": "",
-    "class": "No class (Mitasai)",
+    "class": "授業なし（三田祭）",
     "format": "",
     "date": "2026/11/26",
     "deadlineHW": "",
@@ -1829,24 +1829,35 @@ const scheduleData =
     "date2": "2026/11/26"
   },
   {
+    "session": "Part",
+    "chapter": "",
+    "class": "統語論（機能範疇）：より発展的な構造へ",
+    "format": "",
+    "date": "",
+    "deadlineHW": "",
+    "handout": "",
+    "deadlineClass": "",
+    "date2": ""
+  },
+  {
     "session": "8",
-    "chapter": "第10章",
+    "chapter": "第9章",
     "class": "CP",
     "format": "face-to-face",
     "date": "2026/12/3",
     "deadlineHW": "2025/12/4",
-    "handout": "",
+    "handout": "■ 第9回目までの宿題①（12月8日[火] 正午まで）, \n課題７<https://keiosfc-aki2025.github.io/syntax/assign7.pdf>,\n■ 第9回目までの宿題②（12月10日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/12/8 12:00],\n解答解説（問５～７）<>[after 2026/12/8 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第9講）<https://keiosfc-aki2025.github.io/syntax/class9.pdf>",
     "deadlineClass": "2025/11/28",
     "date2": "2026/12/3"
   },
   {
     "session": "9",
-    "chapter": "第11章",
-    "class": "NegP",
+    "chapter": "第10章\n\n第11章",
+    "class": "NegP\n\nA移動",
     "format": "face-to-face",
     "date": "2026/12/10",
     "deadlineHW": "2025/12/11",
-    "handout": "",
+    "handout": "■ 第10回目までの宿題①（12月15日[火] 正午まで）, \n課題８<https://keiosfc-aki2025.github.io/syntax/assign8.pdf>,\n■ 第10回目までの宿題②（12月17日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/12/15 12:00],\n解答解説（問５～７）<>[after 2026/12/15 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第10講）<https://keiosfc-aki2025.github.io/syntax/class10.pdf>",
     "deadlineClass": "2025/12/5",
     "date2": "2026/12/10"
   },
@@ -1857,7 +1868,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2026/12/17",
     "deadlineHW": "2025/12/18",
-    "handout": "",
+    "handout": "■ 第11回目までの宿題①（12月22日[火] 正午まで）, \n課題９<https://keiosfc-aki2025.github.io/syntax/assign9.pdf>,\n■ 第11回目までの宿題②（12月24日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2026/12/22 12:00],\n解答解説（問５～７）<>[after 2026/12/22 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第11講）<https://keiosfc-aki2025.github.io/syntax/class11.pdf>",
     "deadlineClass": "2025/12/12",
     "date2": "2026/12/17"
   },
@@ -1868,7 +1879,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2026/12/24",
     "deadlineHW": "2025/12/25",
-    "handout": "",
+    "handout": "■ 第12回目までの宿題①（1月5日[火] 正午まで）, \n課題10<https://keiosfc-aki2025.github.io/syntax/assign10.pdf>,\n■ 第12回目までの宿題②（1月7日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2027/1/5 12:00],\n解答解説（問５～７）<>[after 2027/1/5 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第12講）<https://keiosfc-aki2025.github.io/syntax/class12.pdf>",
     "deadlineClass": "2025/12/19",
     "date2": "2026/12/24"
   },
@@ -1879,7 +1890,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2027/1/7",
     "deadlineHW": "2026/1/8",
-    "handout": "",
+    "handout": "■ 第13回目までの宿題①（1月12日[火] 正午まで）, \n課題11<https://keiosfc-aki2025.github.io/syntax/assign11.pdf>,\n■ 第13回目までの宿題②（1月14日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2027/1/12 12:00],\n解答解説（問５～７）<>[after 2027/1/12 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第13講）<https://keiosfc-aki2025.github.io/syntax/class13.pdf>",
     "deadlineClass": "2025/12/26",
     "date2": "2027/1/7"
   },
@@ -1890,7 +1901,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2027/1/14",
     "deadlineHW": "",
-    "handout": "",
+    "handout": "■ 第14回目までの宿題①（1月19日[火] 正午まで）, \n課題12<https://keiosfc-aki2025.github.io/syntax/assign12.pdf>,\n■ 第14回目までの宿題②（1月21日[木]授業開始まで）,\n解答解説（問１～４）<>[after 2027/1/19 12:00],\n解答解説（問５～７）<>[after 2027/1/19 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第14講）<https://keiosfc-aki2025.github.io/syntax/class14.pdf>",
     "deadlineClass": "2026/1/9",
     "date2": "2027/1/14"
   },
@@ -1901,7 +1912,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2027/1/21",
     "deadlineHW": "2026/1/29",
-    "handout": "",
+    "handout": "期末テストのために復習！",
     "deadlineClass": "2026/1/23",
     "date2": "2027/1/21"
   },
