@@ -1703,7 +1703,7 @@ const scheduleData =
     "format": "face-to-face",
     "date": "2026/10/1",
     "deadlineHW": "2025/10/9",
-    "handout": "■ 第2回目までの宿題①（10月6日[火] 正午まで）, \n課題１<https://keiosfc-aki2025.github.io/syntax/assign1.pdf>,\n■ 第2回目までの宿題②（10月8日[木]授業開始まで）,\n解答解説（問１～４）<https://youtu.be/Y7F815OELHQ>[after 2026/10/06 12:00],\n解答解説（問５～７）<https://youtu.be/dLvxHmYlKvo>[after 2026/10/06 12:00],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第2講）<https://keiosfc-aki2025.github.io/syntax/class2.pdf>",
+    "handout": "■ 第2回目までの宿題①（10月6日[火] 正午まで）, \n課題１<https://keiosfc-aki2025.github.io/syntax/assign1.pdf>,\n■ 第2回目までの宿題②（10月8日[木]授業開始まで）,\n解答解説（問１～４）<https://youtu.be/nWzsRB2tO4Y>[after 12:00 2026/10/06],\n解答解説（問５～７）<https://youtu.be/dLvxHmYlKvo>[after 14:15 2026/10/06],\n■次回の授業までに印刷／ダウンロード,\n配布プリント（第2講）<https://keiosfc-aki2025.github.io/syntax/class2.pdf>",
     "deadlineClass": "2025/10/3",
     "date2": "2026/10/1"
   },
@@ -1954,12 +1954,21 @@ const tableTemplate = document.getElementById('tableTemplate');
  */
 function parseDeadlineAsLocal(deadline) {
   if (!deadline) return null;
-  // 数値（Excelシリアル値）を日付オブジェクトに変換
+  // "2025/10/2" などの YYYY/MM/DD 文字列形式に対応
+  if (typeof deadline === 'string' && deadline.includes('/')) {
+    const parts = deadline.split('/').map(x => parseInt(x, 10));
+    if (parts.length === 3 && !parts.some(isNaN)) {
+      return new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
+    }
+  }
+  // 数値（Excelシリアル値）の場合の変換
   let serial = Number(deadline);
-  if (isNaN(serial)) return null;
-  const date = new Date((serial - 25569) * 86400 * 1000);
-  date.setHours(23, 59, 59); // 期限をその日の終わりに設定
-  return date;
+  if (!isNaN(serial)) {
+    const date = new Date((serial - 25569) * 86400 * 1000);
+    date.setHours(23, 59, 59);
+    return date;
+  }
+  return null;
 }
 /**
  * コンテンツの利用開始日時 (MM/DD/YYYY形式または HH:mm MM/DD/YYYY形式) をパースする。
@@ -1969,9 +1978,9 @@ function parseAvailableFromAsLocal(dateStr){
   if(!dateStr) return null;
   let hour = 0;
   let minute = 0;
-  let datePart = dateStr.trim(); // デフォルトは時刻なしと仮定
-  // "13:00 11/15/2025" のような時間指定があるかチェック
-  const timeMatch = dateStr.match(/^(\d{1,2}):(\d{2})\s+(.*)$/);
+  let datePart = dateStr.trim(); 
+  // "13:00 2026/10/06" のように、先頭に時間指定があるかチェック
+  const timeMatch = datePart.match(/^(\d{1,2}):(\d{2})\s+(.*)$/);
   
   if (timeMatch) {
     // 時刻指定がある場合
@@ -1979,12 +1988,14 @@ function parseAvailableFromAsLocal(dateStr){
     minute = parseInt(timeMatch[2], 10);
     datePart = timeMatch[3]; // 残りの日付部分
   }
-  // 日付部分 (例: "11/15/2025") をパース
+  
+  // 日付部分 (例: "2026/10/06") をパース
   const dateParts = datePart.split('/').map(x=>parseInt(x,10));
   if(dateParts.length < 3 || dateParts.some(isNaN)) return null;
   
-  // MM/DD/YYYY形式なので [m, d, y] で受け取る
-  const [m, d, y] = dateParts;
+  // 【修正】実際のデータ（年/月/日）に合わせて [y, m, d] で受け取る
+  const [y, m, d] = dateParts;
+  
   // 利用開始は指定日の指定時刻 (デフォルトは 00:00:00)
   return new Date(y, m-1, d, hour, minute, 0);
 }
